@@ -49,10 +49,10 @@ app.config['SECRET_KEY'] = "Simple Simply Simplifies"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
 #add Postgre database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
 
 #add Postgre database for HEROKU
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://zjemkpdxnisyqk:3db6c5ff56b3e5e079c27eb7445c05b1895408baf145ea04a3bcc02db8e29a25@ec2-23-20-140-229.compute-1.amazonaws.com:5432/d6hju2d6li5i2t'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
 
 #initialize the database with SQLAlchemy
 
