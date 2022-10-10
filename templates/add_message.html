@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+    
+{% if message %}
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="{{ url_for('add_message') }}" class="btn btn-outline-dark btn-lg">Send Message</a>
+  </div>
+
+    <h1>{{ heading }}</h1>
+    <br/>
+    <table class="table table-hover table-bordered table-striped">
+        {% for message in all_messages %}
+        <tr>
+            <td>{{ message.id }}. <a href="{{ url_for('tech_messages', tech_id=message.technician_id) }}" style="color:blue">{{ message.tech_name }}</a> | ID #{{ message.technician_id }} | {{ message.phone }} | 
+                <a href="{{ url_for('job_messages', job_id=message.job_ref) }}" style="color:blue">Job #{{ message.job_ref }}</a>
+                | {{ message.message_body }}</td>
+            </tr>
+        {% endfor %}  
+    </table>
+
+{% else %}
+    <h1>{{ heading }}</h1>
+    <br/>
+<div class="shadow p-3 mb-5 bg-body rounded">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        {{ form.technician_id.label(class="form-label") }}
+
+        {{ form.technician_id(class="form-control") }}
+        <br/>
+
+        {{ form.job_ref.label(class="form-label") }}
+
+        {{ form.job_ref(class="form-control") }}
+        <br/>
+
+        {{ form.message_body.label(class="form-label") }}
+
+        {{ form.message_body(class="form-control") }}
+        <br/>
+
+        {{ form.submit(class="btn btn-success") }}
+
+    </form>
+</div>
+<br/>
+<table class="table table-hover table-bordered table-striped">
+    {% for message in all_messages %}
+    <tr>
+        <td>{{ message.id }}. <a href="{{ url_for('tech_messages', tech_id=message.technician_id) }}" style="color:blue">{{ message.tech_name }}</a> | ID #{{ message.technician_id }} | {{ message.phone }} | 
+            <a href="{{ url_for('job_messages', job_id=message.job_ref) }}" style="color:blue">Job #{{ message.job_ref }}</a>
+            | {{ message.message_body }}</td>
+        </tr>
+    {% endfor %}  
+</table>
+{% endif %}
+
+{% endblock %}

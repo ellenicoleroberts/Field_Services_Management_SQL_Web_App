@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Select Technician for Job #{{ job_id }} </h1>
+    <br/>
+    <table class="table table-hover table-bordered table-striped">
+        {% for tech in all_techs %}
+            <tr>
+            <td>ID #{{ tech.id }}. {{ tech.name }}</a> | {{ tech.phone }} | 
+                <a href="{{ url_for('job_notify', tech_id=tech.id, job_id=job_id) }}">Notify via Text</a></td>
+            </tr>
+        {% endfor %}  
+    </table>
+
+<a href="{{ url_for('jobs') }}" class="btn btn-success">Finished</a>
+
+{% endblock %}

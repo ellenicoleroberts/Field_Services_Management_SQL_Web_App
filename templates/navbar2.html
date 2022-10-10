@@ -1,0 +1,73 @@
+<nav class="navbar navbar-expand-lg bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('index') }}"><b>Simple.</b></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Jobs
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('jobs') }}">Jobs</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('add_job') }}">Add Job</a></li>
+                <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+              </ul>
+            </li> 
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Technicians
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('technicians') }}">Technicians</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('add_tech') }}">Add Technician</a></li>
+                <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Messages
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('incoming_leads') }}">Incoming Leads</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('add_message') }}">All Technician Messages</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('add_direct_message') }}">Direct Technician Messages</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {% if current_user.is_authenticated %}
+                Profile
+              </a>
+              <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                  {% if current_user.id == 9 %}
+                    <li><a class="dropdown-item" href="{{ url_for('admin') }}">Admin</a></li>
+                  {% endif %}
+              {% else %}
+                Sign up
+            </a>
+            <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('add_user') }}">Sign up</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('login') }}">Login</a></li>
+              {% endif %}
+                  <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/about" style="color:grey">About Simple</a>
+            </li>
+          </div>
+            <form method="POST" action="{{ url_for('search')}}" class="d-flex" role="search">
+              {{ form.hidden_tag() }}
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search",
+              name="searched">
+              <button class="btn btn-outline-dark" type="submit">Search</button>
+            </form>
+        </ul>
+      </div>
+    </div>
+  </nav>

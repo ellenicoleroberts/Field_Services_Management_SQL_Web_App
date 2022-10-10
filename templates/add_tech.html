@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+    
+{% if name %}
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="{{ url_for('add_tech') }}" class="btn btn-outline-dark btn-lg">Add Technician</a>
+  </div>  
+  
+    <h1>Technicians</h1>
+    <br/>
+    <table class="table table-hover table-bordered table-striped">
+        {% for our_tech in our_techs %}
+            <tr>
+            <td>ID #{{ our_tech.id}}. <!--{{ our_tech.dispatcher.name }}--><a href="{{ url_for('update', id=our_tech.id) }}">{{ our_tech.name }}</a> | {{ our_tech.phone }} | 
+                Rate: {{ our_tech.tech_rate }}% | <a href="{{ url_for('tech_messages', tech_id=our_tech.id) }}" style="color:darkcyan">Contact</a> |
+                <a href="{{ url_for('tech_jobs', tech_id=our_tech.id) }}" style="color:blueviolet">{{ our_tech.name }}'s Jobs</a> | 
+                <a href="{{ url_for('delete_tech', id=our_tech.id) }}" style="color:red">Delete</a></td>
+            </tr>
+        {% endfor %}  
+    </table>
+
+{% else %}
+
+    <h1>Company Technicians</h1>
+    <br/>
+<div class="shadow p-3 mb-5 bg-body rounded">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        {{ form.name.label(class="form-label") }}
+
+        {{ form.name(class="form-control") }}
+        <br/>
+
+        {{ form.phone.label(class="form-label") }}
+
+        {{ form.phone(class="form-control") }}
+        <br/>
+
+        {{ form.tech_rate.label(class="form-label") }}
+
+        {{ form.tech_rate(class="form-control") }}
+        <br/>
+        {{ form.submit(class="btn btn-success") }}
+
+    </form>
+</div>
+<br/>
+<table class="table table-hover table-bordered table-striped">
+    {% for our_tech in our_techs %}
+        <tr>
+        <td>ID #{{ our_tech.id}}. <a href="{{ url_for('update', id=our_tech.id) }}">{{ our_tech.name }}</a> | {{ our_tech.phone }} | 
+            Rate: {{ our_tech.tech_rate }}% | <a href="{{ url_for('tech_messages', tech_id=our_tech.id) }}" style="color:darkcyan">Contact</a> | 
+            <a href="{{ url_for('tech_jobs', tech_id=our_tech.id) }}" style="color:blueviolet">{{ our_tech.name }}'s Jobs</a> | 
+            <a href="{{ url_for('delete_tech', id=our_tech.id) }}" style="color:red">Delete</a></td>
+        </tr>
+    {% endfor %}  
+</table>
+{% endif %}
+
+{% endblock %}

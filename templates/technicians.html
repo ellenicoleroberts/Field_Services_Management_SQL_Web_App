@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="{{ url_for('add_tech') }}" class="btn btn-outline-dark btn-lg">Add Technician</a>
+  </div>  
+
+<h1>Technicians</h1>
+    <br/>
+    <table class="table table-hover table-bordered table-striped">
+        {% for our_user in our_users %}
+            <tr>
+            <td>ID #{{ our_user.id}}. <a href="{{ url_for('update', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.phone }} | 
+                Rate: {{ our_user.tech_rate }}% | <a href="{{ url_for('tech_messages', tech_id=our_user.id) }}" style="color:darkcyan">Contact</a> |
+                <a href="{{ url_for('tech_jobs', tech_id=our_user.id) }}" style="color:blueviolet">{{ our_user.name }}'s Jobs</a> | 
+                <a href="{{ url_for('delete_tech', id=our_user.id) }}" style="color:red">Delete</a></td>
+            </tr>
+        {% endfor %}  
+    </table>
+
+ 
+{% endblock %}
