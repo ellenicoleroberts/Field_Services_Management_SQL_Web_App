@@ -83,11 +83,11 @@ def search():
     form = SearchForm()
     jobs = Jobs.query
     if form.validate_on_submit():
-        job = form.searched.data
-        jobs = jobs.filter(Jobs.description.like('%' + job + '%'))
+        input = form.searched.data.lower()
+        jobs = jobs.filter(Jobs.description.like('%' + input + '%'))
         jobs = jobs.order_by(Jobs.date_added).all()
 
-        return render_template("search.html", form=form, searched=job, jobs=jobs)
+        return render_template("search.html", form=form, searched=input, jobs=jobs)
 
 @app.route('/admin')
 @login_required
@@ -132,7 +132,7 @@ def test_pw():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = Users.query.filter_by(username=form.username.data).first()  #grabs 1st username (the ONLY one, as they are unique) -- if it exists!
+        user = Users.query.filter_by(username=form.username.data.lower()).first()  #grabs 1st username (the ONLY one, as they are unique) -- if it exists!
         if user:
             if check_password_hash(user.password_hash, form.password.data): #checks the hash, returns True or False 
                 login_user(user)
@@ -141,7 +141,7 @@ def login():
             else:
                 flash("Wrong password, please try again.")
         else:
-            flash("User doesn't exist, please try again.")
+            flash("User doesn't exist or incorrect username. Please try again.")
 
     return render_template('login.html', form=form)
 
@@ -165,15 +165,21 @@ def add_user():
     username = None
     form = UserForm()
     if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first() #DB Slot! if there is a 'first', this means that this user is already in db
+        user = Users.query.filter_by(email=form.email.data.lower()).first() #DB Slot! if there is a 'first', this means that this user is already in db
         if user is None:
-            hashed_pw = generate_password_hash(form.password_hash.data, "sha256")  #hash the password
-            user = Users(name=form.name.data, email=form.email.data, username=form.username.data, password_hash=hashed_pw) #DB Slot! defining new user to add to db
-            db.session.add(user) #adding the user
-            db.session.commit()  #comitting the addition
-            flash("User added successfully.")
+            user = Users.query.filter_by(username=form.username.data.lower()).first() #DB Slot! if there is a 'first', this means that this user is already in db
+            if user is None:
+                hashed_pw = generate_password_hash(form.password_hash.data, "sha256")  #hash the password
+                user = Users(name=form.name.data, email=form.email.data.lower(), username=form.username.data.lower(), password_hash=hashed_pw) #DB Slot! defining new user to add to db
+                db.session.add(user) #adding the user
+                db.session.commit()  #comitting the addition
+                flash("User added successfully.")
+            else:
+                flash("Darn, username already exists. Please choose a unique username.")
+                return redirect(url_for("add_user"))
         else:
-            flash("User already exists.")
+            flash("There is an account already associated with this email.")
+            return redirect(url_for("add_user"))
         username = form.username.data
         form.name.data = '' #clearing the form, name box
         form.email.data = '' #clearing the form, email box
@@ -197,12 +203,17 @@ def add_message():
 
         recip_record = Technicians.query.get_or_404(recipient_id)
 
-        message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
-        #DB Slot! defining new user to add to db
+        if form.job_ref.data != None:
+
+            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
+            recip_record.last_sms_job_ref = message.job_ref            
+
+        else:
+
+            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, direct_message=True) 
+            #DB Slot! defining new user to add to db
 
         recip_record.last_sms_direct = message.message_body
-
-        recip_record.last_sms_job_ref = message.job_ref
 
         db.session.add(message) #adding the message entry to db
 
@@ -300,7 +311,10 @@ def add_job():
     form = JobForm()
 
     if form.validate_on_submit():
-        job = Jobs(address=form.address.data, contact=form.contact.data, description=form.description.data, technician=form.technician.data,
+
+        description = form.description.data.lower()
+
+        job = Jobs(address=form.address.data, contact=form.contact.data, description=description, technician=form.technician.data,
         confirmed=form.confirmed.data, open=form.open.data, job_time=form.job_time.data, notes=form.notes.data) #DB Slot! defining new user to add to db
 
         db.session.add(job) #adding the user
@@ -365,12 +379,17 @@ def tech_messages(tech_id):
 
         recip_record = Technicians.query.get_or_404(recipient_id)
 
-        message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
-        #DB Slot! defining new user to add to db
+        if form.job_ref.data != '':
+
+            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
+            recip_record.last_sms_job_ref = message.job_ref            
+
+        elif form.job_ref.data == '':
+
+            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=0, direct_message=True) 
+            #DB Slot! defining new user to add to db
 
         recip_record.last_sms_direct = message.message_body
-
-        recip_record.last_sms_job_ref = message.job_ref
 
         db.session.add(message) #adding the message entry to db
 
@@ -481,6 +500,7 @@ def update_user(id):
             return render_template("update_user.html", form=form, name_to_update=name_to_update, id=id)
     else:
         return render_template("update_user.html", form=form, name_to_update=name_to_update, id=id)
+
 
 #UPDATES Technicians table database record
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
@@ -756,7 +776,7 @@ def confirm_reply():
 
         technician = Technicians.query.get_or_404(respondant_tech_id)
 
-        if technician.last_sms_auto != None:
+        if technician.last_sms_auto != None and technician.last_sms_auto != None:
 
             if body.split()[0].isnumeric() and 'yes' in body:
 
@@ -775,7 +795,7 @@ def confirm_reply():
                     db.session.commit()  #comitting the addition
 
                     response = (f"{technician.name} you are now CONFIRMED for Job #{job.id}.\n\nPlease text '{job.id} done' when you complete Job #{job.id}.\n\n"
-                            "If you are not able to make it, or need to reach out, please text this number and someone will assist you.\n\n")
+                            f"If you are not able to make it, text '{job.id} cancel'.\n\nIf you need to reach out, please text this number and someone will assist you.\n\n")
 
                     resp.message(response)
 
@@ -935,6 +955,15 @@ def confirm_reply():
                 else:
                     resp.message("Please enter correct Job #.")
 
+            
+            elif technician.last_sms_auto != None:
+
+                message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=body, job_ref=technician.last_sms_job_ref, direct_message=True) 
+
+                db.session.add(message_to_add) #adding the message entry to db
+
+                db.session.commit()  #comitting the addition
+            
             else:
 
                 message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=body, job_ref=technician.last_sms_job_ref, direct_message=True) 
@@ -952,7 +981,7 @@ def confirm_reply():
             db.session.commit()
 
     else:
-        print("danger!")
+        print("INCOMING LEAD!")
 
         incoming_phone=request.values.get('From')
 
@@ -1077,7 +1106,7 @@ class Messages(db.Model):
     tech_name = db.Column(db.String(50))
     phone = db.Column(db.String(15), nullable=False) 
     message_body = db.Column(db.String(500), nullable=False) 
-    job_ref = db.Column(db.Integer) 
+    job_ref = db.Column(db.Integer, nullable=True) 
     sid = db.Column(db.Integer, nullable=True) 
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     direct_message = db.Column(db.Boolean, default=False) 

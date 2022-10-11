@@ -18,7 +18,7 @@
     <table class="table table-hover table-bordered table-striped">
         {% for our_user in our_users %}
             <tr>
-            <td>ID #{{ our_user.id}}. <a href="{{ url_for('update', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.phone }} | 
+            <td>ID #{{ our_user.id}}.) <a href="{{ url_for('update', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.phone }} | 
                 Rate: {{ our_user.tech_rate }}% | <a href="{{ url_for('tech_messages', tech_id=our_user.id) }}" style="color:darkcyan">Contact</a> |
                 <a href="{{ url_for('tech_jobs', tech_id=our_user.id) }}" style="color:blueviolet">{{ our_user.name }}'s Jobs</a> | 
                 <a href="{{ url_for('delete_tech', id=our_user.id) }}" style="color:red">Delete</a></td>

@@ -45,7 +45,7 @@ class JobForm(FlaskForm):  #inherits FlaskForm
 class MessageForm(FlaskForm):  #inherits FlaskForm
 
     technician_id = IntegerField("Technician ID:", validators=[DataRequired()])
-    job_ref = IntegerField("Job #:", validators=[DataRequired()])
+    job_ref = StringField("Job #:")
     message_body = StringField("Message:", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
