@@ -9,11 +9,12 @@
     </div>
 {% endfor %}
 
-    <br/><br/>
+    <br/>
     <div class="card">
         <div class="card-header">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <a href="{{ url_for('logout') }}" class="btn btn-outline-dark btn-lg">Logout</a>
+                <br/>
               </div>  
             <h1>{{ current_user.name }}'s Dashboard</h1>
         </div>
