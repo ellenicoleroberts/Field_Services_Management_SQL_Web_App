@@ -16,12 +16,12 @@
 <h1>Technicians</h1>
     <br/>
     <table class="table table-hover table-bordered table-striped">
-        {% for our_user in our_users %}
+        {% for our_tech in our_techs %}
             <tr>
-            <td><b>ID #{{ our_user.id}}</b> | <a href="{{ url_for('update', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.phone }} | 
-                Rate: {{ our_user.tech_rate }}% | <a href="{{ url_for('tech_messages', tech_id=our_user.id) }}" style="color:darkcyan">Contact</a> |
-                <a href="{{ url_for('tech_jobs', tech_id=our_user.id) }}" style="color:blueviolet">{{ our_user.name }}'s Jobs</a> | 
-                <a href="{{ url_for('delete_tech', id=our_user.id) }}" style="color:red">Delete</a></td>
+            <td><b>ID #{{ our_tech.id}}</b> | <a href="{{ url_for('update', id=our_tech.id) }}">{{ our_tech.name }}</a> | {{ our_tech.phone }} | 
+                Rate: {{ our_tech.tech_rate }}% | <a href="{{ url_for('tech_messages', tech_id=our_tech.id) }}" style="color:darkcyan">Contact</a> |
+                <a href="{{ url_for('tech_jobs', tech_id=our_tech.id) }}" style="color:blueviolet">{{ our_tech.name }}'s Jobs</a> | 
+                <a href="{{ url_for('delete_tech', id=our_tech.id) }}" style="color:red">Delete</a></td>
             </tr>
         {% endfor %}  
     </table>

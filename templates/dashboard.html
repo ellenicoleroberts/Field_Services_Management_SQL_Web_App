@@ -12,15 +12,14 @@
     <br/>
     <div class="card">
         <div class="card-header">
-  
-            <h1>{{ current_user.name }}'s Dashboard</h1>
+            <h1 align="right">{{ current_user.name }}'s Dashboard</h1>
         </div>
         <div class="card-body">
           <p class="card-text">
             <strong>User ID: </strong>{{ current_user.id }}<br/><br/>
             <strong>Email: </strong>{{ current_user.email }}<br/><br/>
             <strong>Username: </strong>{{ current_user.username }}<br/><br/>
-            <strong>Date Joined: </strong>{{ current_user.date_added }}<br/><br/>
+            <strong>Date Joined: </strong>{{ current_user.date_added.strftime('%-I:%M%p %x') }}<br/><br/>
           </p>
 
           <a href="{{ url_for('update_user', id=current_user.id) }}" class="btn btn-success">Update Profile</a>

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+</br>
+<h1>{{ heading }}</h1>
+<em><p>Click the <b style="color:rgb(199, 0, 0)">red date</b> to mark as read.</p></em>
+    <br/>
+    <table class="table table-hover table-bordered table-striped">    
+        {% for message in all_messages %}
+        <tr>
+            <td>
+                {% if message.read == False %}
+                    <a href="{{ url_for('all_tech_messages_read', message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
+                {% else %}
+                    <b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b>
+                {% endif %}
+                | <a href="{{ url_for('tech_messages', tech_id=message.technician_id) }}" style="color:blue">{{ message.tech_name }}</a>, ID #{{ message.technician_id }} | {{ message.phone }} | 
+                {% if message.job_ref>0 %}
+                    <a href="{{ url_for('job_messages', job_id=message.job_ref, tech_id=message.technician_id) }}" style="color:blue">Job #{{ message.job_ref }}</a>
+                {% else %}
+                    Job: n/a
+                {% endif %}
+                | {{ message.message_body }}</td>
+            </tr>
+        {% endfor %}  
+    </table>
+
+
+{% endblock %}
