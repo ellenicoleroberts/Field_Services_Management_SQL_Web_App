@@ -52,7 +52,7 @@ class MessageForm(FlaskForm):  #inherits FlaskForm
 #create a form class for adding incoming lead messages
 class IncomingForm(FlaskForm):  #inherits FlaskForm
 
-    phone = StringField("Contact:", validators=[DataRequired()])
+    phone = StringField("To:", validators=[DataRequired()])
     message_body = StringField("Message:", validators=[DataRequired()])
     submit = SubmitField("Submit")
 

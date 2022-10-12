@@ -12,6 +12,7 @@ from twilio.rest import Client
 #from send_sms import *
 
 from datetime import datetime, timedelta
+from pytz import timezone
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -49,10 +50,10 @@ app.config['SECRET_KEY'] = "Simple Simply Simplifies"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
 #add Postgre database
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
 
 #add Postgre database for HEROKU
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
 
 #initialize the database with SQLAlchemy
 
@@ -424,14 +425,16 @@ def tech_messages(tech_id):
 
 
 #displays a given job's messages
-@app.route('/messages/job/<int:job_id>', methods=['GET', 'POST'])
+@app.route('/messages/job/<int:job_id>/<int:tech_id>', methods=['GET', 'POST'])
 @login_required
-def job_messages(job_id):
+def job_messages(job_id, tech_id):
         
     message = None
     form = MessageForm()
 
     form.job_ref.data = job_id
+
+    form.technician_id.data = tech_id
 
     heading = f"Messages for Job #{job_id}"
 
@@ -1123,6 +1126,7 @@ class Jobs(db.Model):
 
 #create database model for Messages table
 class Messages(db.Model):
+    #eastern = timezone('US/Eastern')
     id = db.Column(db.Integer, primary_key=True)
     technician_id = db.Column(db.Integer) #they have to fill out
     tech_name = db.Column(db.String(50))
@@ -1130,7 +1134,7 @@ class Messages(db.Model):
     message_body = db.Column(db.String(500), nullable=False) 
     job_ref = db.Column(db.Integer, nullable=True) 
     sid = db.Column(db.Integer, nullable=True) 
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_added = db.Column(db.DateTime, default=datetime.now)
     direct_message = db.Column(db.Boolean, default=False) 
     incoming_lead = db.Column(db.Boolean, default=False) 
     

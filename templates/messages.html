@@ -11,12 +11,15 @@
     <table class="table table-hover table-bordered table-striped">
         {% for message in all_messages %}
         <tr>
-            <td>{% if message.direct_message %}
-                Message ID #{{ message.id }}. | <a href="{{ url_for('technicians') }}">To: {{ message.tech_name }}, ID #{{ message.technician_id }} / {{ message.phone }}</a> | Job #{{ message.job_ref }} 
+            <td>
+                <b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b> | <a href="{{ url_for('tech_messages', tech_id=message.technician_id) }}" style="color:blue">{{ message.tech_name }}</a>, ID #{{ message.technician_id }} | {{ message.phone }} | 
+                {% if message.job_ref>0 %}
+                    <a href="{{ url_for('job_messages', job_id=message.job_ref) }}" style="color:blue">Job #{{ message.job_ref }}</a>
+                {% else %}
+                    Job: n/a
+                {% endif %}
                 | {{ message.message_body }}</td>
-            {% endif %}
-
-        </tr>
+            </tr>
         {% endfor %}  
     </table>
 

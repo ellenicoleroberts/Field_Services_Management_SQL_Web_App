@@ -19,21 +19,25 @@
     <br/>
     <table class="table table-hover table-bordered table-striped">
         {% for job in all_jobs %}
-        <tr>
-            <td>{{ job.id }}.) <a href="{{ url_for('update_job', id=job.id) }}">{{ job.address }}</a> | 
+            <tr>
+            <td><b>Job #{{ job.id }}</b> | <a href="{{ url_for('update_job', id=job.id) }}">{{ job.address }}</a> | 
                 {% if job.confirmed == "Unconfirmed" %}
-                    <a href="{{ url_for('assign_job', job_id=job.id) }}" style="color:red">{{ job.confirmed }}</a>
+                    <a href="{{ url_for('assign_job', job_id=job.id) }}" style="color:red">Assign</a>
                 {% elif job.confirmed == "Confirmed" %}
-                    <a href="{{ url_for('assign_job', job_id=job.id) }}" style="color:green">{{ job.confirmed }}</a>
-                {% endif %}
-                {% if job.open == "Open" %}
-                | <a href="{{ url_for('update_job', id=job.id) }}" style="color:darkmagenta">{{ job.open }}</a>
-                {% else %}
-                | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
+                    <a href="{{ url_for('update_job', id=job.id) }}" style="color:green">Confirmed</a>
                 {% endif %} 
-                | {{ job.contact }} | {{ job.description }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{job.technician_phone }} 
-                | {{ job.job_time }} |  {{ job.notes }} <a href="{{ url_for('delete_job', id=job.id) }}" style="color:red">Delete</a> | 
-                <a href="{{ url_for('job_messages', job_id=job.id) }}" style="color:blueviolet">Job Messages</a>
+                {% if job.open == "Open" %}
+                    | <a href="{{ url_for('update_job', id=job.id) }}" style="color:darkmagenta">{{ job.open }}</a>
+                {% else %}
+                    | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
+                {% endif %}
+                | {{ job.contact }} | {{ job.description }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
+                | {{ job.job_time }} | {{ job.notes }} <a href="{{ url_for('delete_job', id=job.id) }}" style="color:red">Delete</a> | 
+                {% if job.confirmed == "Confirmed" %}
+                    <a href="{{ url_for('job_messages', job_id=job.id, tech_id=job.technician) }}" style="color:blueviolet">Job Messages</a>
+                {% else %}
+                    <a href="{{ url_for('job_messages', job_id=job.id, tech_id=0) }}" style="color:blueviolet">Job Messages</a>
+                {% endif %}
             </tr>
         {% endfor %}  
     </table>
@@ -103,7 +107,11 @@
 
     </form>
 </div>
-<br/>
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">Cancel</a>
+  </div>  
+<br/><br/><br/>
 
 {% endif %}
 
