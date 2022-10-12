@@ -83,9 +83,10 @@ def base():
 def search():
     form = SearchForm()
     jobs = Jobs.query
+    descrip = Jobs.description.lower()
     if form.validate_on_submit():
         input = form.searched.data.lower()
-        jobs = jobs.filter(Jobs.description.lower().like('%' + input + '%'))
+        jobs = jobs.filter(descrip.like('%' + input + '%'))
         jobs = jobs.order_by(Jobs.date_added).all()
 
         return render_template("search.html", form=form, searched=input, jobs=jobs)
