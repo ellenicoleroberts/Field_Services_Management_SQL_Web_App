@@ -12,7 +12,7 @@
         {% for message in all_messages %}
         <tr>
             <td>{% if message.direct_message %}
-                Message ID #{{ message.id }}. | <a href="{{ url_for('technicians') }}">To: {{ message.tech_name }} | ID #{{ message.technician_id }} / {{ message.phone }}</a> | Job #{{ message.job_ref }} 
+                Message ID #{{ message.id }}. | <a href="{{ url_for('technicians') }}">To: {{ message.tech_name }}, ID #{{ message.technician_id }} / {{ message.phone }}</a> | Job #{{ message.job_ref }} 
                 | {{ message.message_body }}</td>
             {% endif %}
 
