@@ -15,7 +15,7 @@
     <table class="table table-hover table-bordered table-striped">
         {% for message in all_messages %}
         <tr>
-            <td>Lead #{{ message.id }}.) <a href="{{ url_for('incoming_messages', phone=message.phone) }}" style="color:blue">{{ message.phone }}</a> | {{ message.message_body }} | 
+            <td>Message #{{ message.id }}.) <a href="{{ url_for('incoming_messages', phone=message.phone) }}" style="color:blue">{{ message.phone }}</a> | {{ message.message_body }} | 
                 <a href="{{ url_for('add_job') }}" style="color:green">Add Job</a> | <a href="{{ url_for('delete_lead', message_id=message.id) }}" style="color:red">Delete Lead</a</td>
             </tr>
         {% endfor %}  
@@ -46,7 +46,7 @@
 <table class="table table-hover table-bordered table-striped">
     {% for message in all_messages %}
     <tr>
-        <td>Lead #{{ message.id }}.) <a href="{{ url_for('incoming_messages', phone=message.phone) }}" style="color:blue">{{ message.phone }}</a> | {{ message.message_body }} | 
+        <td>Message #{{ message.id }}.) <a href="{{ url_for('incoming_messages', phone=message.phone) }}" style="color:blue">{{ message.phone }}</a> | {{ message.message_body }} | 
             <a href="{{ url_for('add_job') }}" style="color:green">Add Job</a> | <a href="{{ url_for('delete_lead', message_id=message.id) }}" style="color:red">Delete Lead</a</td>
         </tr>
     {% endfor %}  

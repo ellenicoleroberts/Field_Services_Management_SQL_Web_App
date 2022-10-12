@@ -31,8 +31,8 @@ class TechnicianForm(FlaskForm):  #inherits FlaskForm
 class JobForm(FlaskForm):  #inherits FlaskForm
    
     address = StringField("Address:", validators=[DataRequired()])
-    confirmed = SelectField("Confirmed:", choices = [('unconfirmed', 'Unconfirmed'), ('confirmed', 'Confirmed')])
-    open = SelectField("Status:", choices = [('open', 'Open'), ('closed', 'Closed')])
+    confirmed = SelectField("Confirmed:", choices = [('Unconfirmed', 'Unconfirmed'), ('Confirmed', 'Confirmed')])
+    open = SelectField("Status:", choices = [('Open', 'Open'), ('Closed', 'Closed')])
     contact = StringField("Contact Phone:", validators=[DataRequired()])
     description = StringField("Description:", validators=[DataRequired()])
     #technician = SelectField("Technician ID:", choices = list)
