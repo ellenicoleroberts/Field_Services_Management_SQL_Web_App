@@ -83,10 +83,9 @@ def base():
 def search():
     form = SearchForm()
     jobs = Jobs.query
-    descrip = Jobs.description.lower()
     if form.validate_on_submit():
-        input = form.searched.data.lower()
-        jobs = jobs.filter(descrip.like('%' + input + '%'))
+        input = form.searched.data.upper()
+        jobs = jobs.filter(Jobs.description.like('%' + input + '%'))
         jobs = jobs.order_by(Jobs.date_added).all()
 
         return render_template("search.html", form=form, searched=input, jobs=jobs)
@@ -323,7 +322,9 @@ def add_job():
 
     if form.validate_on_submit():
 
-        job = Jobs(address=form.address.data, contact=form.contact.data, description=form.description.data, technician=form.technician.data,
+        description = form.description.data.upper()
+
+        job = Jobs(address=form.address.data, contact=form.contact.data, description=description, technician=form.technician.data,
         confirmed=form.confirmed.data, open=form.open.data, job_time=form.job_time.data, notes=form.notes.data) #DB Slot! defining new user to add to db
 
         db.session.add(job) #adding the user
