@@ -77,6 +77,7 @@ def base():
     form = SearchForm()
     return dict(form=form)
 
+
 #create search function
 @app.route('/search', methods=['POST'])
 def search():
@@ -84,7 +85,7 @@ def search():
     jobs = Jobs.query
     if form.validate_on_submit():
         input = form.searched.data.lower()
-        jobs = jobs.filter(Jobs.description.like('%' + input + '%'))
+        jobs = jobs.filter(Jobs.description.lower().like('%' + input + '%'))
         jobs = jobs.order_by(Jobs.date_added).all()
 
         return render_template("search.html", form=form, searched=input, jobs=jobs)
@@ -127,6 +128,7 @@ def test_pw():
     return render_template("testpassword.html", email=email, 
     password=password, form=form, pw_to_check=pw_to_check, passed=passed)
 
+
 #create a login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -145,6 +147,7 @@ def login():
 
     return render_template('login.html', form=form)
 
+
 #create logout 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -153,11 +156,13 @@ def logout():
     flash("You are now logged out.")
     return redirect(url_for('login'))
 
+
 #create a dashboard page
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
 
 #ADDS a user to database
 @app.route('/user/add', methods=['GET', 'POST'])
@@ -188,6 +193,7 @@ def add_user():
         
     our_users = Users.query.order_by(Users.date_added.desc()) #returns everything in database
     return render_template("add_user.html", form=form, username=username, our_users=our_users) #form, username, and our_users get passed into template
+
 
 #ADDS a message (to/from technicians) to database
 @app.route('/message/add', methods=['GET', 'POST'])
@@ -231,6 +237,7 @@ def add_message():
     all_messages = Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc()) #returns everything in database
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="All Technician Messages") #form, name, and our_users get passed into template
 
+
 #ADDS a direct message (to/from technicians) to database
 @app.route('/directmessage/add', methods=['GET', 'POST'])
 @login_required
@@ -269,6 +276,7 @@ def add_direct_message():
 
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="All Direct Technician Messages") #form, name, and our_users get passed into template
 
+
 #ADDS a direct message to/from INCOMING LEADS to database
 @app.route('/incomingleads/add', methods=['GET', 'POST'])
 @login_required
@@ -277,6 +285,7 @@ def incoming_leads():
     all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
 
     return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+
 
 #ADDS technician to database
 @app.route('/technician/add', methods=['GET', 'POST'])
@@ -302,6 +311,7 @@ def add_tech():
     our_techs = Technicians.query.order_by(Technicians.date_added.desc()) #returns everything in database
     return render_template("add_tech.html", form=form, name=name, our_techs=our_techs) #form, name, and our_users get passed into template
 
+
 #ADDS job to database
 @app.route('/job/add', methods=['GET', 'POST'])
 @login_required
@@ -312,9 +322,7 @@ def add_job():
 
     if form.validate_on_submit():
 
-        description = form.description.data.lower()
-
-        job = Jobs(address=form.address.data, contact=form.contact.data, description=description, technician=form.technician.data,
+        job = Jobs(address=form.address.data, contact=form.contact.data, description=form.description.data, technician=form.technician.data,
         confirmed=form.confirmed.data, open=form.open.data, job_time=form.job_time.data, notes=form.notes.data) #DB Slot! defining new user to add to db
 
         db.session.add(job) #adding the user
@@ -335,6 +343,7 @@ def add_job():
     all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
     return render_template("add_job.html", form=form, address=address, all_jobs=all_jobs) #form, name, and our_users get passed into template
 
+
 #displays technicians
 @app.route('/technicians', methods=['GET', 'POST'])
 @login_required
@@ -342,12 +351,14 @@ def technicians():
     our_users = Technicians.query.order_by(Technicians.date_added.desc()) #returns everything in database
     return render_template("technicians.html", our_users=our_users) #form, name, and our_users get passed into template
 
+
 #displays jobs
 @app.route('/jobs', methods=['GET', 'POST'])
 @login_required
 def jobs():
     all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
     return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") #form, name, and our_users get passed into template
+
 
 #displays technician's jobs
 @app.route('/jobs/tech/<int:tech_id>', methods=['GET', 'POST'])
@@ -358,6 +369,7 @@ def tech_jobs(tech_id):
     tech = Technicians.query.get_or_404(tech_id)
     heading = f"{tech.name}'s Jobs"
     return render_template("jobs.html", all_jobs=all_jobs, heading=heading) #form, name, and our_users get passed into template
+
 
 #displays technician's messages
 @app.route('/messages/tech/<int:tech_id>', methods=['GET', 'POST'])
@@ -408,6 +420,7 @@ def tech_messages(tech_id):
 
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading) #form, name, and our_users get passed into template
 
+
 #displays a given job's messages
 @app.route('/messages/job/<int:job_id>', methods=['GET', 'POST'])
 @login_required
@@ -450,6 +463,7 @@ def job_messages(job_id):
 
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading) #form, name, and our_users get passed into template
 
+
 #sends message to incoming lead
 @app.route('/messages/incoming/<string:phone>', methods=['GET', 'POST'])
 @login_required
@@ -479,6 +493,7 @@ def incoming_messages(phone):
     all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
 
     return render_template("incoming_send.html", form=form, message=message, all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+
 
 #UPDATES user table database record
 @app.route('/updateuser/<int:id>', methods=['GET', 'POST'])
@@ -522,6 +537,7 @@ def update(id):
             return render_template("update_tech.html", form=form, name_to_update=name_to_update, id=id)
     else:
         return render_template("update_tech.html", form=form, name_to_update=name_to_update, id=id)
+
 
 #UPDATES Jobs table database record
 @app.route('/updatejob/<int:id>', methods=['GET', 'POST'])
@@ -588,6 +604,7 @@ def delete_tech(id):
         flash("There was an issue deleting user. Try again.")
     return render_template("technicians.html", form=form, name=name, our_users=our_users) #form, name, and our_users get passed into template
 
+
 #deletes job from database
 @app.route('/deletejob/<int:id>')
 @login_required
@@ -605,6 +622,7 @@ def delete_job(id):
     except:
         flash("There was an issue deleting user. Try again.")
     return render_template("jobs.html", form=form, address=address, all_jobs=all_jobs, heading="All Jobs") 
+
 
 #deletes incoming lead from database
 @app.route('/deletelead/<int:message_id>')
@@ -627,6 +645,7 @@ def delete_lead(message_id):
 
     return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
 
+
 #assigns job from database
 @app.route('/assign/<int:job_id>')
 @login_required
@@ -634,6 +653,7 @@ def assign_job(job_id):
     all_techs = Technicians.query.order_by(Technicians.date_added.desc()) #returns everything in database
 
     return render_template("assign_job.html", job_id=job_id, all_techs=all_techs) #form, address, and our_users get passed into template
+
 
 #notifies technician of incoming job via sms message
 @app.route('/jobnotify/<int:tech_id>/<int:job_id>', methods=['GET', 'POST'])
@@ -1076,6 +1096,7 @@ class Technicians(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name #will put name on screen
 
+
 #create database model for Jobs table
 class Jobs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1098,6 +1119,7 @@ class Jobs(db.Model):
     #create a string
     def __repr__(self):
         return '<Name %r>' % self.address #will put name on screen
+
 
 #create database model for Messages table
 class Messages(db.Model):
