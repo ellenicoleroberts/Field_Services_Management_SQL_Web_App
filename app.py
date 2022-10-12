@@ -84,7 +84,7 @@ def search():
     form = SearchForm()
     jobs = Jobs.query
     if form.validate_on_submit():
-        input = form.searched.data.upper()
+        input = form.searched.data.lower()
         jobs = jobs.filter(Jobs.description.like('%' + input + '%'))
         jobs = jobs.order_by(Jobs.date_added).all()
 
@@ -322,7 +322,7 @@ def add_job():
 
     if form.validate_on_submit():
 
-        description = form.description.data.upper()
+        description = form.description.data.lower()
 
         job = Jobs(address=form.address.data, contact=form.contact.data, description=description, technician=form.technician.data,
         confirmed=form.confirmed.data, open=form.open.data, job_time=form.job_time.data, notes=form.notes.data) #DB Slot! defining new user to add to db
@@ -1098,7 +1098,6 @@ class Technicians(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name #will put name on screen
 
-
 #create database model for Jobs table
 class Jobs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1121,7 +1120,6 @@ class Jobs(db.Model):
     #create a string
     def __repr__(self):
         return '<Name %r>' % self.address #will put name on screen
-
 
 #create database model for Messages table
 class Messages(db.Model):
