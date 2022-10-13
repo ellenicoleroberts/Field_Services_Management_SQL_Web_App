@@ -10,8 +10,8 @@
 {% endfor %}
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">Jobs</a>
-    <a href="{{ url_for('add_job') }}" class="btn btn-outline-dark btn-lg">Add Job</a>
+    <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">jobs</a>
+    <a href="{{ url_for('add_job') }}" class="btn btn-outline-dark btn-lg">add job</a>
   </div>  
 </br>
 {% if address %}
@@ -103,13 +103,13 @@
         {{ form.submit(class="btn btn-success") }}
 
         <a href="{{ url_for('delete_job', id=id)}}" 
-        class="btn btn-danger">Delete</a>
+        class="btn btn-danger">delete</a>
 
     </form>
 </div>
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">Cancel</a>
+    <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">cancel</a>
   </div>  
 <br/><br/><br/>
 

@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, EqualTo, Length
 class SearchForm(FlaskForm):  #inherits FlaskForm
 
     searched = StringField("Searched:", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")
 
 #create a form class for adding users
 class UserForm(FlaskForm):  #inherits FlaskForm
@@ -17,7 +17,7 @@ class UserForm(FlaskForm):  #inherits FlaskForm
     username = StringField("Username:", validators=[DataRequired()])
     password_hash = PasswordField("Password:", validators=[DataRequired(), EqualTo('password_hash2', message='Passwords must match.')])
     password_hash2 = PasswordField("Confirm Password:", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")
     
 #create a form class for adding technicians
 class TechnicianForm(FlaskForm):  #inherits FlaskForm
@@ -25,7 +25,7 @@ class TechnicianForm(FlaskForm):  #inherits FlaskForm
     name = StringField("Technician Name:", validators=[DataRequired()])
     phone = StringField("Phone:", validators=[DataRequired()])
     tech_rate = FloatField("Rate (numbers only, e.g. 20% should be '20'):", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")
 
 #create a form class for adding jobs
 class JobForm(FlaskForm):  #inherits FlaskForm
@@ -39,7 +39,7 @@ class JobForm(FlaskForm):  #inherits FlaskForm
     technician = IntegerField("Technician:")
     job_time = StringField("Scheduled time:")
     notes = StringField("Additional notes:")
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")
 
 #create a form class for adding messages to technicians
 class MessageForm(FlaskForm):  #inherits FlaskForm
@@ -47,25 +47,25 @@ class MessageForm(FlaskForm):  #inherits FlaskForm
     technician_id = IntegerField("Technician ID:", validators=[DataRequired()])
     job_ref = StringField("Job #:")
     message_body = StringField("Message:", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")
 
 #create a form class for adding incoming lead messages
 class IncomingForm(FlaskForm):  #inherits FlaskForm
 
     phone = StringField("To:", validators=[DataRequired()])
     message_body = StringField("Message:", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")
 
 #create a form class for users and their passwords
 class PasswordForm(FlaskForm):  #inherits FlaskForm
 
     email = StringField("Your email address:", validators=[DataRequired()])
     password_hash = PasswordField("Your password:", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")
 
 #create a form class for login
 class LoginForm(FlaskForm):  #inherits FlaskForm
 
     username = StringField("Username:", validators=[DataRequired()])
     password = PasswordField("Password:", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("submit")

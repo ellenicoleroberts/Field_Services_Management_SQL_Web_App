@@ -22,12 +22,12 @@
         {% for message in all_messages %}
         <tr>
             <td>
-                {% if message.read == False and tech_call %}
+                {% if message.read == False and call_type == 'tech' %}
                     <a href="{{ url_for('tech_messages_read_short', tech_id=message.technician_id, message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
-                {% elif message.read and tech_call %} 
-                    <b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b>
-                {% elif message.read == False and tech_call == False %}
+                {% elif message.read == False and call_type == 'job' %}
                     <a href="{{ url_for('job_messages_read_short', job_id=message.job_ref, tech_id=message.technician_id, message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
+                {% elif message.read == False and call_type == 'generic' %}
+                    <a href="{{ url_for('all_tech_messages_read_short', message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
                 {% else %} 
                     <b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b>
                 {% endif %}
@@ -74,18 +74,18 @@
 </div>
 <br/>
 <h1>{{ heading }}</h1>
-<em><p>Click the <b style="color:rgb(199, 0, 0)">red date</b> to mark as read.</p></em>
+<em><p>Click the <b style="color:rgb(199, 0, 0)">red date</b> to mark as read</p></em>
     <br/>
     <table class="table table-hover table-bordered table-striped">    
         {% for message in all_messages %}
         <tr>
             <td>
-                {% if message.read == False and tech_call %}
+                {% if message.read == False and call_type == 'tech' %}
                     <a href="{{ url_for('tech_messages_read', tech_id=message.technician_id, message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
-                {% elif message.read and tech_call %} 
-                    <b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b>
-                {% elif message.read == False and tech_call == False %}
+                {% elif message.read == False and call_type == 'job' %}
                     <a href="{{ url_for('job_messages_read', job_id=message.job_ref, tech_id=message.technician_id, message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
+                {% elif message.read == False and call_type == 'generic' %}
+                    <a href="{{ url_for('all_tech_messages_read', message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
                 {% else %} 
                     <b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b>
                 {% endif %}

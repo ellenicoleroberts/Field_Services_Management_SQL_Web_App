@@ -12,7 +12,7 @@
 <table class="table table-hover table-bordered table-striped">
 
         <tr>
-        <td>Job ID #{{ job.id }}.) <a href="{{ url_for('update_job', id=job.id) }}">{{ job.address }}</a> | 
+        <td><b>Job #{{ job.id }}</b> | <a href="{{ url_for('update_job', id=job.id) }}">{{ job.address }}</a> | 
             {% if job.confirmed == "Unconfirmed" %}
                 <a href="{{ url_for('assign_job', job_id=job.id) }}" style="color:red">{{ job.confirmed }}</a>
             {% elif job.confirmed == "Confirmed" %}

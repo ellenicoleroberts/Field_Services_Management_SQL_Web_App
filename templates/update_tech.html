@@ -27,8 +27,8 @@
 {% else %}
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{{ url_for('technicians') }}" class="btn btn-outline-dark btn-lg">Technicians</a>
-    <a href="{{ url_for('add_tech') }}" class="btn btn-outline-dark btn-lg">Add Technician</a>
+    <a href="{{ url_for('technicians') }}" class="btn btn-outline-dark btn-lg">technicians</a>
+    <a href="{{ url_for('add_tech') }}" class="btn btn-outline-dark btn-lg">add technician</a>
   </div> 
 <br/>
     <h1>Update Technician</h1>
@@ -58,13 +58,13 @@
         {{ form.submit(class="btn btn-success") }}
 
         <a href="{{ url_for('delete_tech', id=id)}}" 
-        class="btn btn-danger">Delete</a>
+        class="btn btn-danger">delete</a>
 
     </form>
 </div>
 <br/>
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{{ url_for('technicians') }}" class="btn btn-outline-dark btn-lg">Cancel</a>
+    <a href="{{ url_for('technicians') }}" class="btn btn-outline-dark btn-lg">cancel</a>
   </div> 
 <br/><br/><br/>
 {% endif %}
