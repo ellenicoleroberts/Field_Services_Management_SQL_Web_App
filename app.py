@@ -2,6 +2,7 @@ from distutils.command import check
 from distutils.command.install_egg_info import to_filename
 from unicodedata import name
 from flask import Flask, Response, request
+
 from twilio.twiml.messaging_response import MessagingResponse
 from flask import render_template, flash, redirect, url_for
 from twilio import twiml
@@ -49,10 +50,10 @@ app.config['SECRET_KEY'] = "Simple Simply Simplifies"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
 #add Postgre database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
 
 #add Postgre database for HEROKU
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
 
 #initialize the database with SQLAlchemy
 
@@ -230,7 +231,7 @@ def add_tech():
 @login_required
 def add_job():
     
-    address = None
+    description = None
     form = JobForm()
 
     if form.validate_on_submit():
@@ -243,7 +244,7 @@ def add_job():
         db.session.add(job) #adding the user
         db.session.commit()  #comitting the addition
 
-        address = form.address.data
+        description = form.description.data
 
         form.address.data = '' #clearing the form
         form.contact.data = '' 
@@ -256,10 +257,54 @@ def add_job():
         flash("Job added successfully.")
 
     all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
-    return render_template("add_job.html", form=form, address=address, all_jobs=all_jobs) #form, name, and our_users get passed into template
+    return render_template("add_job.html", form=form, description=description, all_jobs=all_jobs) 
 
 
-#ADDS a message (to/from technicians) to database and displays all auto+direct technician messages
+#ADDS job by way of an incoming lead to database
+@app.route('/leadtojob/add/<string:source>/<string:description>', methods=['GET', 'POST'])
+@login_required
+def add_lead_as_job(source, description):
+    
+    description_body = None
+    form = JobForm()
+
+    description = description.lower()
+
+    form.description.data = description
+
+    if form.validate_on_submit():
+
+        description = form.description.data.lower()
+
+        if bool(Jobs.query.filter_by(description=description).first()) == False: 
+        
+            job = Jobs(address=form.address.data, contact=form.contact.data, description=description, technician=form.technician.data,
+            confirmed=form.confirmed.data, open=form.open.data, job_time=form.job_time.data, notes=form.notes.data, source=source) #DB Slot! defining new user to add to db
+
+            db.session.add(job) #adding the user
+            db.session.commit()  #comitting the addition
+
+            description_body = form.description.data
+
+            form.address.data = '' #clearing the form
+            form.contact.data = '' 
+            form.description.data = '' 
+            form.technician.data = '' 
+            form.confirmed.data = '' 
+            form.open.data = '' 
+            form.job_time.data = '' 
+            form.notes.data = '' 
+            flash("Job added successfully.")
+
+        else:
+            flash("Darn, looks like this job was already added.")
+            return redirect(url_for("incoming_leads"))
+
+    all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
+    return render_template("add_job.html", form=form, description=description_body, all_jobs=all_jobs) 
+
+
+#ADDS message and displays all messages to technicians (auto and direct)
 @app.route('/message/add', methods=['GET', 'POST'])
 @login_required
 def add_message():
@@ -300,81 +345,10 @@ def add_message():
         flash("Message sent successfully.")
 
     all_messages = Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc()) #returns everything in database
-    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="All Technician Messages", call_type=call_type) #form, name, and our_users get passed into template
+    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="All Technician Messages", call_type=call_type) 
 
 
-#ADDS a direct message (to/from technicians) to database
-@app.route('/directmessage/add', methods=['GET', 'POST'])
-@login_required
-def add_direct_message():
-    
-    call_type = "generic"
-    message = None
-    form = MessageForm()
-
-    if form.validate_on_submit():
-        
-        recipient_id = form.technician_id.data
-
-        recip_record = Technicians.query.get_or_404(recipient_id)
-
-        message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
-        #DB Slot! defining new user to add to db
-
-        recip_record.last_sms_direct = message.message_body
-
-        recip_record.last_sms_job_ref = message.job_ref
-
-        db.session.add(message) #adding the message entry to db
-
-        db.session.commit()  #comitting the addition
-
-        send_message(message)
-
-        message = form.message_body.data
-
-        form.technician_id.data = '' #clearing the form
-        form.message_body.data = '' 
-        form.job_ref.data = '' 
-        flash("Message sent successfully.")
-
-    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
-
-    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="Direct Technician Messages", call_type=call_type) #form, name, and our_users get passed into template
-
-
-#ADDS a message to/from INCOMING LEADS to database and displays all incoming leads
-@app.route('/messages/incoming/<string:phone>', methods=['GET', 'POST'])
-@login_required
-def incoming_messages(phone):
-        
-    message = None
-    form = IncomingForm()
-
-    form.phone.data = phone
-
-    if form.validate_on_submit():
-
-        message_to_add = Messages(technician_id=000, phone=form.phone.data, message_body=form.message_body.data, job_ref=000, direct_message=True, incoming_lead=True) 
-
-        db.session.add(message_to_add) #adding the message entry to db
-
-        db.session.commit()  #comitting the addition
-
-        send_message(message_to_add)    
-
-        message = form.message_body.data
-
-        form.phone.data = '' #clearing the form
-        form.message_body.data = ''
-        flash("Message sent successfully.")
-
-    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
-
-    return render_template("incoming_send.html", form=form, message=message, all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
-
-
-#ADDS messages and displays all messages to technicians (auto and direct); also marks a given message as "read"
+#ADDS message and displays all messages to technicians (auto and direct); also marks a given message as "read"
 @app.route('/allmessagesread/<int:message_id>', methods=['GET', 'POST'])
 @login_required
 def all_messages_read(message_id):
@@ -423,6 +397,112 @@ def all_messages_read(message_id):
     all_messages =  Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc())
 
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type)
+
+
+#ADDS a direct message (to/from technicians) to database
+@app.route('/directmessage/add', methods=['GET', 'POST'])
+@login_required
+def add_direct_message():
+    
+    call_type = "generic"
+    message = None
+    form = MessageForm()
+
+    if form.validate_on_submit():
+        
+        recipient_id = form.technician_id.data
+
+        recip_record = Technicians.query.get_or_404(recipient_id)
+
+        message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
+        #DB Slot! defining new user to add to db
+
+        recip_record.last_sms_direct = message.message_body
+
+        recip_record.last_sms_job_ref = message.job_ref
+
+        db.session.add(message) #adding the message entry to db
+
+        db.session.commit()  #comitting the addition
+
+        send_message(message)
+
+        message = form.message_body.data
+
+        form.technician_id.data = '' #clearing the form
+        form.message_body.data = '' 
+        form.job_ref.data = '' 
+        flash("Message sent successfully.")
+
+    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
+
+    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="Direct Technician Messages", call_type=call_type) #form, name, and our_users get passed into template
+
+
+#ADDS a message to INCOMING LEADS to database and displays all incoming leads
+@app.route('/messages/incoming/<string:phone>', methods=['GET', 'POST'])
+@login_required
+def incoming_messages(phone):
+        
+    message = None
+    form = IncomingForm()
+
+    form.phone.data = phone
+
+    if form.validate_on_submit():
+
+        message_to_add = Messages(technician_id=000, phone=form.phone.data, message_body=form.message_body.data, job_ref=000, direct_message=True, incoming_lead=True) 
+
+        db.session.add(message_to_add) #adding the message entry to db
+
+        db.session.commit()  #comitting the addition
+
+        send_message(message_to_add)    
+
+        message = form.message_body.data
+
+        form.phone.data = '' #clearing the form
+        form.message_body.data = ''
+        flash("Message sent successfully.")
+
+    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
+
+    return render_template("add_incoming.html", form=form, message=message, all_messages=all_messages, heading="Incoming Leads") 
+
+
+#ADDS a message to INCOMING LEADS to database and displays all incoming leads; also marks a given message as "read"
+@app.route('/messages/incomingread/<string:phone>/<string:message_id>', methods=['GET', 'POST'])
+@login_required
+def incoming_leads_read(phone, message_id):
+        
+    message = None
+    form = IncomingForm()
+
+    form.phone.data = phone
+
+    if form.validate_on_submit():
+
+        message_to_add = Messages(technician_id=000, phone=form.phone.data, message_body=form.message_body.data, job_ref=000, direct_message=True, incoming_lead=True) 
+
+        db.session.add(message_to_add) #adding the message entry to db
+
+        db.session.commit()  #comitting the addition
+
+        send_message(message_to_add)    
+
+        message = form.message_body.data
+
+        form.phone.data = '' #clearing the form
+        form.message_body.data = ''
+        flash("Message sent successfully.")
+
+    message_read = Messages.query.get_or_404(message_id)
+    message_read.read = True
+    db.session.add(message_read) #adding the message entry to db
+    db.session.commit()
+    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
+
+    return render_template("add_incoming.html", form=form, message=message, all_messages=all_messages, heading="Incoming Leads")
 
 
 #ADDS message and displays given technician's messages 
@@ -661,14 +741,28 @@ def tech_jobs(tech_id):
 #Messaging-Display-Queries--------------------------------------------------------
 
 
-#displays messages to/from incoming leads 
+#displays messages to/from incoming leads  WITHOUT message form 
 @app.route('/incomingleads/add', methods=['GET', 'POST'])
 @login_required
 def incoming_leads():
     
     all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
 
-    return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+    return render_template("incoming_leads.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+
+
+#displays messages to/from incoming leads WITHOUT message form AND marks as read
+@app.route('/incomingleadsshort/add/<int:message_id>', methods=['GET', 'POST'])
+@login_required
+def incoming_leads_read_short(message_id):
+    message = Messages.query.get_or_404(message_id)
+    message.read = True
+    db.session.add(message) #adding the message entry to db
+    db.session.commit()
+    
+    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
+
+    return render_template("incoming_leads.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
 
 
 #displays all messages to technicians (auto and direct) WITHOUT message form
@@ -813,9 +907,11 @@ def update_job(id):
     
     job_to_update = Jobs.query.get_or_404(id) #Makes a query object: queries Jobs table, or if it doesn't exist give a 404. Pass in job id, which gets passed into function and comes from url
     
+    form.description.data = job_to_update.description
+
     if request.method == "POST":
         job_to_update.address = request.form['address']
-        job_to_update.contact = request.form['contact'] #DB Slot!
+        job_to_update.contact = request.form['contact'] 
         job_to_update.description = request.form['description']
         job_to_update.confirmed = request.form['confirmed']
         job_to_update.open = request.form['open']
@@ -834,7 +930,7 @@ def update_job(id):
         return render_template("update_job.html", form=form, job_to_update=job_to_update, id=id)
 
 
-#Deletions from Database---------------------------------------------
+#Deletions-and-Cancelations-from-Database---------------------------------------------
 
 
 #deletes user from database
@@ -878,18 +974,83 @@ def delete_tech(id):
 @login_required
 def delete_job(id):
     job_to_delete = Jobs.query.get_or_404(id)
-    address = None
+    description = None
     form = JobForm()
     try:
         db.session.delete(job_to_delete)
         db.session.commit()
         flash("Job deleted successfully.")
         all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
-        return render_template("jobs.html", form=form, address=address, all_jobs=all_jobs, heading="All Jobs") 
+        return render_template("jobs.html", form=form, description=description, all_jobs=all_jobs, heading="All Jobs") 
 
     except:
         flash("There was an issue deleting user. Try again.")
-    return render_template("jobs.html", form=form, address=address, all_jobs=all_jobs, heading="All Jobs") 
+    return render_template("jobs.html", form=form, description=description, all_jobs=all_jobs, heading="All Jobs") 
+
+
+#CANCELS job and notifies tech that it's canceled
+@app.route('/cancelnotifyjob/<int:id>/<int:tech_id>')
+@login_required
+def cancel_notify_job(id, tech_id):
+    job_to_cancel = Jobs.query.get_or_404(id)
+    try:
+        job_to_cancel.canceled = True
+        db.session.add(job_to_cancel) 
+        db.session.commit()
+        flash("This job has been cancelled and the assigned technician was notified of this cancellation.")
+
+        if tech_id != None:
+            
+            technician = Technicians.query.get_or_404(tech_id)
+            job = Jobs.query.get_or_404(id)
+
+            cancel_message(technician, job)
+
+        all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
+        return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
+
+    except:
+        flash("There was an issue canceling this job. Try again.")
+    return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
+
+
+#CANCELS job 
+@app.route('/canceljob/<int:id>')
+@login_required
+def cancel_job(id):
+    job_to_cancel = Jobs.query.get_or_404(id)
+    try:
+        job_to_cancel.canceled = True
+        db.session.add(job_to_cancel) 
+        db.session.commit()
+        flash("Job cancelled successfully.")
+
+        all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
+        return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
+
+    except:
+        flash("There was an issue canceling this job. Try again.")
+    return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
+
+
+#UNCANCELS job 
+@app.route('/uncanceljob/<int:id>')
+@login_required
+def uncancel_job(id):
+    job_to_uncancel = Jobs.query.get_or_404(id)
+    try:
+        job_to_uncancel.canceled = False
+        job_to_uncancel.confirmed = "Unconfirmed"
+        job_to_uncancel.open = "Open"
+        db.session.add(job_to_uncancel) 
+        db.session.commit()
+        flash("Job re-established. Please reassign to a technician.")
+        all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
+        return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
+
+    except:
+        flash("There was an issue canceling this job. Try again.")
+    return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
 
 
 #deletes incoming lead from database
@@ -906,12 +1067,12 @@ def delete_lead(message_id):
 
         all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
 
-        return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+        return render_template("incoming_leads.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
 
     except:
         flash("There was an issue deleting lead. Try again.")
 
-    return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+    return render_template("incoming_leads.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
 
 
 #Assign-And-Notification-of-Jobs---------------------------------------
@@ -990,7 +1151,7 @@ def close_job(technician):
         message = client.messages.create(
             to=technician.phone,
             from_="+13605854201",
-            body=f"Thank you, {technician.name}.\n\nWhat is the total amount paid by the customer for Job #{technician.last_sms_job_ref}?\n\nEnter 'P' followed by amount, e.g. if job cost $250, enter 'P250'.\n\nIf amount was billed, enter 'Billed'."
+            body=f"Thank you, {technician.name}.\n\nWhat is the total amount paid by the customer for Job #{technician.last_sms_job_ref}?\n\nEnter 'P' followed by amount, e.g. if job cost $250, enter 'P250'.\n\nIf amount was billed, enter 'B250'."
             )
 
         technician.last_sms_auto = message.body
@@ -1021,6 +1182,49 @@ def closing_message(technician):
         db.session.add(message_to_add) #adding the message entry to db
 
         db.session.commit() 
+
+
+def closing_message_billed(technician): 
+
+        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
+        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+            to=technician.phone,
+            from_="+13605854201",
+            body=f"{technician.name} thank you. Job #{technician.last_sms_job_ref} is now CLOSED."
+            )
+
+        technician.last_sms_auto = message.body
+
+        message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=technician.last_sms_auto, job_ref=technician.last_sms_job_ref) 
+        
+        db.session.add(message_to_add) #adding the message entry to db
+
+        db.session.commit()
+
+def cancel_message(technician, job): 
+
+        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
+        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+            to=technician.phone,
+            from_="+13605854201",
+            body=f"{technician.name}, unfortunately Job #{job.id} has been canceled. You are no longer on this job."
+            )
+
+        technician.last_sms_auto = message.body
+
+        message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=technician.last_sms_auto, job_ref=technician.last_sms_job_ref) 
+        
+        db.session.add(message_to_add) #adding the message entry to db
+
+        db.session.commit()
 
 
 def follow_up(job):
@@ -1246,6 +1450,33 @@ def confirm_reply():
                 else:
                     resp.message("Please enter correct Job #.")
 
+            elif "What is the total amount paid" in technician.last_sms_auto and body[0] == 'b' and body[1:].isnumeric():
+
+                job = Jobs.query.get_or_404(tech.last_sms_job_ref)
+
+                if job.technician_phone == technician.phone:
+
+                    technician.last_sms_auto = body
+
+                    message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=body, job_ref=technician.last_sms_job_ref) 
+                    
+                    db.session.add(message_to_add) #adding the message entry to db
+
+                    job.open = "Closed"
+
+                    job.billed = True
+
+                    job.amt_paid = body[1:]
+
+                    db.session.commit()
+
+                    closing_message_billed(technician)
+
+                    exit()
+                
+                else:
+                    resp.message("Please enter correct Job #.")
+
             
             elif technician.last_sms_auto != None:
 
@@ -1370,9 +1601,9 @@ class Technicians(db.Model):
 #create database model for Jobs table
 class Jobs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    address = db.Column(db.String(50), nullable=False) #'nullable=False' means they have to fill out address
-    contact = db.Column(db.String(120), nullable=False) #they have to fill out contact info 
-    description = db.Column(db.String(120), nullable=True) 
+    address = db.Column(db.String(100), nullable=True) 
+    contact = db.Column(db.String(120), nullable=True) #they have to fill out contact info 
+    description = db.Column(db.String(350), nullable=False, unique=True) 
     job_time = db.Column(db.String(120), nullable=True) 
     technician = db.Column(db.Integer, nullable=True) 
     technician_name = db.Column(db.String(120), nullable=True) 
@@ -1384,6 +1615,9 @@ class Jobs(db.Model):
     amt_billed = db.Column(db.Float(12), nullable=True)
     expenses = db.Column(db.Float(12), nullable=True)
     tech_rate = db.Column(db.Float(5), nullable=True)
+    billed = db.Column(db.Boolean, default=False)
+    source = db.Column(db.String(120), nullable=True)
+    canceled = db.Column(db.Boolean, default=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
 
     #create a string

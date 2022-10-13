@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SubmitField, DateField, IntegerField, FloatField, SelectField, PasswordField, ValidationError
+from wtforms import StringField, BooleanField, SubmitField, DateField, IntegerField, FloatField, SelectField, PasswordField, ValidationError, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, Length 
 
 
@@ -30,13 +30,13 @@ class TechnicianForm(FlaskForm):  #inherits FlaskForm
 #create a form class for adding jobs
 class JobForm(FlaskForm):  #inherits FlaskForm
    
-    address = StringField("Address:", validators=[DataRequired()])
     confirmed = SelectField("Confirmed:", choices = [('Unconfirmed', 'Unconfirmed'), ('Confirmed', 'Confirmed')])
     open = SelectField("Status:", choices = [('Open', 'Open'), ('Closed', 'Closed')])
-    contact = StringField("Contact Phone:", validators=[DataRequired()])
-    description = StringField("Description:", validators=[DataRequired()])
+    contact = StringField("Contact Phone:")
+    description = TextAreaField("Description:", render_kw={'rows':'4'}, validators=[DataRequired()])
     #technician = SelectField("Technician ID:", choices = list)
     technician = IntegerField("Technician:")
+    address = StringField("Address:")
     job_time = StringField("Scheduled time:")
     notes = StringField("Additional notes:")
     submit = SubmitField("submit")
