@@ -43,8 +43,7 @@ app = Flask(__name__) #instance of Flask, creates an app
 
 app.config['SECRET_KEY'] = "Simple Simply Simplifies"
 
-#--------------------------------------------------------
-#ADD DATABASE
+#Add-Database------------------------------------------------------
 
 #add SQLite database
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -59,8 +58,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@
 
 db = SQLAlchemy(app) 
 
-#--------------------------------------------------------
-#Flask login 
+
+#Flask-Login-------------------------------------------------------- 
 
 login_manager = LoginManager()  #instantiates Flask login
 login_manager.init_app(app)
@@ -91,6 +90,8 @@ def search():
 
         return render_template("search.html", form=form, searched=input, jobs=jobs)
 
+
+#admin
 @app.route('/admin')
 @login_required
 def admin(): 
@@ -165,6 +166,9 @@ def dashboard():
     return render_template('dashboard.html')
 
 
+#Additions-to-Database----------------------------------------------
+
+
 #ADDS a user to database
 @app.route('/user/add', methods=['GET', 'POST'])
 def add_user():
@@ -194,101 +198,6 @@ def add_user():
         
     our_users = Users.query.order_by(Users.date_added.desc()) #returns everything in database
     return render_template("add_user.html", form=form, username=username, our_users=our_users) #form, username, and our_users get passed into template
-
-
-#ADDS a message (to/from technicians) to database
-@app.route('/message/add', methods=['GET', 'POST'])
-@login_required
-def add_message():
-    
-    call_type = "generic"
-    message = None
-    form = MessageForm()
-
-    if form.validate_on_submit():
-        
-        recipient_id = form.technician_id.data
-
-        recip_record = Technicians.query.get_or_404(recipient_id)
-
-        if form.job_ref.data != '':
-
-            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
-            recip_record.last_sms_job_ref = message.job_ref            
-
-        else:
-
-            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=0, direct_message=True) 
-            #DB Slot! defining new user to add to db
-
-        recip_record.last_sms_direct = message.message_body
-
-        db.session.add(message) #adding the message entry to db
-
-        db.session.commit()  #comitting the addition
-
-        send_message(message)
-
-        message = form.message_body.data
-
-        form.technician_id.data = '' #clearing the form
-        form.message_body.data = '' 
-        form.job_ref.data = '' 
-        flash("Message sent successfully.")
-
-    all_messages = Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc()) #returns everything in database
-    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="All Technician Messages", call_type=call_type) #form, name, and our_users get passed into template
-
-
-
-#ADDS a direct message (to/from technicians) to database
-@app.route('/directmessage/add', methods=['GET', 'POST'])
-@login_required
-def add_direct_message():
-    
-    call_type = "generic"
-    message = None
-    form = MessageForm()
-
-    if form.validate_on_submit():
-        
-        recipient_id = form.technician_id.data
-
-        recip_record = Technicians.query.get_or_404(recipient_id)
-
-        message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
-        #DB Slot! defining new user to add to db
-
-        recip_record.last_sms_direct = message.message_body
-
-        recip_record.last_sms_job_ref = message.job_ref
-
-        db.session.add(message) #adding the message entry to db
-
-        db.session.commit()  #comitting the addition
-
-        send_message(message)
-
-        message = form.message_body.data
-
-        form.technician_id.data = '' #clearing the form
-        form.message_body.data = '' 
-        form.job_ref.data = '' 
-        flash("Message sent successfully.")
-
-    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
-
-    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="Direct Technician Messages", call_type=call_type) #form, name, and our_users get passed into template
-
-
-#ADDS a direct message to/from INCOMING LEADS to database
-@app.route('/incomingleads/add', methods=['GET', 'POST'])
-@login_required
-def incoming_leads():
-    
-    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
-
-    return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
 
 
 #ADDS technician to database
@@ -350,61 +259,125 @@ def add_job():
     return render_template("add_job.html", form=form, address=address, all_jobs=all_jobs) #form, name, and our_users get passed into template
 
 
-#displays technicians
-@app.route('/technicians', methods=['GET', 'POST'])
+#ADDS a message (to/from technicians) to database and displays all auto+direct technician messages
+@app.route('/message/add', methods=['GET', 'POST'])
 @login_required
-def technicians():
-    our_techs = Technicians.query.order_by(Technicians.date_added.desc()) #returns everything in database
-    return render_template("technicians.html", our_techs=our_techs) 
+def add_message():
+    
+    call_type = "generic"
+    message = None
+    form = MessageForm()
+
+    if form.validate_on_submit():
+        
+        recipient_id = form.technician_id.data
+
+        recip_record = Technicians.query.get_or_404(recipient_id)
+
+        if form.job_ref.data != '':
+
+            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
+            recip_record.last_sms_job_ref = message.job_ref            
+
+        else:
+
+            message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=0, direct_message=True) 
+            #DB Slot! defining new user to add to db
+
+        recip_record.last_sms_direct = message.message_body
+
+        db.session.add(message) #adding the message entry to db
+
+        db.session.commit()  #comitting the addition
+
+        send_message(message)
+
+        message = form.message_body.data
+
+        form.technician_id.data = '' #clearing the form
+        form.message_body.data = '' 
+        form.job_ref.data = '' 
+        flash("Message sent successfully.")
+
+    all_messages = Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc()) #returns everything in database
+    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="All Technician Messages", call_type=call_type) #form, name, and our_users get passed into template
 
 
-#displays jobs
-@app.route('/jobs', methods=['GET', 'POST'])
+#ADDS a direct message (to/from technicians) to database
+@app.route('/directmessage/add', methods=['GET', 'POST'])
 @login_required
-def jobs():
-    all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
-    return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
+def add_direct_message():
+    
+    call_type = "generic"
+    message = None
+    form = MessageForm()
+
+    if form.validate_on_submit():
+        
+        recipient_id = form.technician_id.data
+
+        recip_record = Technicians.query.get_or_404(recipient_id)
+
+        message = Messages(technician_id=recipient_id, tech_name=recip_record.name, phone=recip_record.phone, message_body=form.message_body.data, job_ref=form.job_ref.data, direct_message=True) 
+        #DB Slot! defining new user to add to db
+
+        recip_record.last_sms_direct = message.message_body
+
+        recip_record.last_sms_job_ref = message.job_ref
+
+        db.session.add(message) #adding the message entry to db
+
+        db.session.commit()  #comitting the addition
+
+        send_message(message)
+
+        message = form.message_body.data
+
+        form.technician_id.data = '' #clearing the form
+        form.message_body.data = '' 
+        form.job_ref.data = '' 
+        flash("Message sent successfully.")
+
+    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
+
+    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading="Direct Technician Messages", call_type=call_type) #form, name, and our_users get passed into template
 
 
-#displays technician's jobs
-@app.route('/jobs/tech/<int:tech_id>', methods=['GET', 'POST'])
+#ADDS a message to/from INCOMING LEADS to database and displays all incoming leads
+@app.route('/messages/incoming/<string:phone>', methods=['GET', 'POST'])
 @login_required
-def tech_jobs(tech_id):
+def incoming_messages(phone):
+        
+    message = None
+    form = IncomingForm()
 
-    all_jobs =  Jobs.query.filter(Jobs.technician == tech_id).order_by(Jobs.date_added.desc()) #returns only tech's jobs
-    tech = Technicians.query.get_or_404(tech_id)
-    heading = f"{tech.name}'s Jobs"
-    return render_template("jobs.html", all_jobs=all_jobs, heading=heading) 
+    form.phone.data = phone
 
+    if form.validate_on_submit():
 
-#displays all tech messages (auto and direct) 
-@app.route('/alltechmessages', methods=['GET', 'POST'])
-@login_required
-def all_tech_messages():
-    all_messages =  Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc())
-    heading = "All Technician Messages"
-    url = url_for("add_message")
-    return render_template("tech_messages.html", all_messages=all_messages, heading=heading, url=url) 
+        message_to_add = Messages(technician_id=000, phone=form.phone.data, message_body=form.message_body.data, job_ref=000, direct_message=True, incoming_lead=True) 
 
+        db.session.add(message_to_add) #adding the message entry to db
 
-#displays all tech messages (auto and direct) AND marks as read
-@app.route('/alltechmessagesreadshort/<int:message_id>', methods=['GET', 'POST'])
-@login_required
-def all_tech_messages_read_short(message_id):
-    message = Messages.query.get_or_404(message_id)
-    message.read = True
-    db.session.add(message) #adding the message entry to db
-    db.session.commit()
-    all_messages =  Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc())
-    heading = "All Technician Messages"
-    url = url_for("add_message")
-    return render_template("tech_messages.html", all_messages=all_messages, heading=heading, url=url) 
+        db.session.commit()  #comitting the addition
+
+        send_message(message_to_add)    
+
+        message = form.message_body.data
+
+        form.phone.data = '' #clearing the form
+        form.message_body.data = ''
+        flash("Message sent successfully.")
+
+    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
+
+    return render_template("incoming_send.html", form=form, message=message, all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
 
 
-#displays all tech messages (auto and direct) with message form up top; also marks a given message as "read"
+#ADDS messages and displays all messages to technicians (auto and direct); also marks a given message as "read"
 @app.route('/allmessagesread/<int:message_id>', methods=['GET', 'POST'])
 @login_required
-def all_tech_messages_read(message_id):
+def all_messages_read(message_id):
 
     call_type = "generic" 
     message = None
@@ -452,31 +425,7 @@ def all_tech_messages_read(message_id):
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type)
 
 
-#displays all direct tech messages
-@app.route('/directmessages', methods=['GET', 'POST'])
-@login_required
-def direct_messages():
-    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
-    heading = "Direct Technician Messages"
-    url = url_for("add_direct_message")
-    return render_template("tech_messages_direct.html", all_messages=all_messages, heading=heading, url=url) 
-
-
-#displays direct tech messages and marks as read
-@app.route('/directtechmessagesread/<int:message_id>', methods=['GET', 'POST'])
-@login_required
-def direct_messages_read(message_id):
-    message = Messages.query.get_or_404(message_id)
-    message.read = True
-    db.session.add(message) #adding the message entry to db
-    db.session.commit()
-    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
-    heading = "Direct Technician Messages"
-    url = url_for("add_direct_message")
-    return render_template("tech_messages_direct.html", all_messages=all_messages, heading=heading, url=url) 
-
-
-#displays a given technician's messages (message form up top) 
+#ADDS message and displays given technician's messages 
 @app.route('/messages/tech/<int:tech_id>', methods=['GET', 'POST'])
 @login_required
 def tech_messages(tech_id):
@@ -527,7 +476,7 @@ def tech_messages(tech_id):
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type) #form, name, and our_users get passed into template
 
 
-#displays a given technician's messages (message form up top) and marks a given message as "read"
+#ADDS message to technician and displays given technician's messages and marks a given message as "read"
 @app.route('/messagesread/tech/<int:tech_id>/<int:message_id>', methods=['GET', 'POST'])
 @login_required
 def tech_messages_read(tech_id, message_id):
@@ -579,30 +528,10 @@ def tech_messages_read(tech_id, message_id):
     db.session.commit()
     all_messages =  Messages.query.filter(Messages.technician_id == tech_id, Messages.incoming_lead == False).order_by(Messages.date_added.desc())
 
-    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type) #form, name, and our_users get passed into template
+    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type) 
 
 
-#displays technician's messages (WITHOUT Send Message box) and mark's a given message as "read"
-@app.route('/messagesreadshort/tech/<int:tech_id>/<int:message_id>', methods=['GET', 'POST'])
-@login_required
-def tech_messages_read_short(tech_id, message_id):
-
-    recipient = Technicians.query.get_or_404(tech_id)
-
-    heading = f"Messages for {recipient.name}"
-
-    message_read = Messages.query.get_or_404(message_id)
-    message_read.read = True
-    db.session.add(message_read) #adding the message entry to db
-    db.session.commit()
-
-    all_messages =  Messages.query.filter(Messages.technician_id == tech_id, Messages.incoming_lead == False).order_by(Messages.date_added.desc())
-    url = url_for("add_message")
-    
-    return render_template("tech_messages.html", all_messages=all_messages, heading=heading, url=url) 
-
-
-#displays a given job's messages
+#ADDS message and displays a given job's messages 
 @app.route('/messages/job/<int:job_id>/<int:tech_id>', methods=['GET', 'POST'])
 @login_required
 def job_messages(job_id, tech_id):
@@ -648,7 +577,7 @@ def job_messages(job_id, tech_id):
     return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type) 
 
 
-#displays a given job's messages and mark's a given message as "read"
+#ADDS message and displays a given job's messages and mark's a given message as "read"
 @app.route('/messages/job/<int:job_id>/<int:tech_id>/<int:message_id>', methods=['GET', 'POST'])
 @login_required
 def job_messages_read(job_id, tech_id, message_id):
@@ -696,10 +625,121 @@ def job_messages_read(job_id, tech_id, message_id):
     
     all_messages =  Messages.query.filter(Messages.job_ref == job_id, Messages.incoming_lead == False).order_by(Messages.date_added.desc())
 
-    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type) #form, name, and our_users get passed into template
+    return render_template("add_message.html", form=form, message=message, all_messages=all_messages, heading=heading, call_type=call_type) 
 
 
-#displays a given job's messages (WITHOUT Send Message box) and mark's a given message as "read"
+#Display-Queries-(Minus-Messaging)-------------------------------------------------------
+
+
+#displays all technicians
+@app.route('/technicians', methods=['GET', 'POST'])
+@login_required
+def technicians():
+    our_techs = Technicians.query.order_by(Technicians.date_added.desc()) #returns everything in database
+    return render_template("technicians.html", our_techs=our_techs) 
+
+
+#displays all jobs
+@app.route('/jobs', methods=['GET', 'POST'])
+@login_required
+def jobs():
+    all_jobs = Jobs.query.order_by(Jobs.date_added.desc()) #returns everything in database
+    return render_template("jobs.html", all_jobs=all_jobs, heading="All Jobs") 
+
+
+#displays technician's jobs
+@app.route('/jobs/tech/<int:tech_id>', methods=['GET', 'POST'])
+@login_required
+def tech_jobs(tech_id):
+
+    all_jobs =  Jobs.query.filter(Jobs.technician == tech_id).order_by(Jobs.date_added.desc()) #returns only tech's jobs
+    tech = Technicians.query.get_or_404(tech_id)
+    heading = f"{tech.name}'s Jobs"
+    return render_template("jobs.html", all_jobs=all_jobs, heading=heading) 
+
+
+#Messaging-Display-Queries--------------------------------------------------------
+
+
+#displays messages to/from incoming leads 
+@app.route('/incomingleads/add', methods=['GET', 'POST'])
+@login_required
+def incoming_leads():
+    
+    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
+
+    return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+
+
+#displays all messages to technicians (auto and direct) WITHOUT message form
+@app.route('/allmessages', methods=['GET', 'POST'])
+@login_required
+def all_messages():
+    all_messages =  Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc())
+    heading = "All Technician Messages"
+    url = url_for("add_message")
+    return render_template("tech_messages.html", all_messages=all_messages, heading=heading, url=url) 
+
+
+#displays all messages (auto and direct) WITHOUT form AND marks as read
+@app.route('/allmessagesreadshort/<int:message_id>', methods=['GET', 'POST'])
+@login_required
+def all_messages_read_short(message_id):
+    message = Messages.query.get_or_404(message_id)
+    message.read = True
+    db.session.add(message) #adding the message entry to db
+    db.session.commit()
+    all_messages =  Messages.query.filter(Messages.incoming_lead == False).order_by(Messages.date_added.desc())
+    heading = "All Technician Messages"
+    url = url_for("add_message")
+    return render_template("tech_messages.html", all_messages=all_messages, heading=heading, url=url) 
+
+
+#displays all direct technician messages
+@app.route('/directmessages', methods=['GET', 'POST'])
+@login_required
+def direct_messages():
+    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
+    heading = "Direct Technician Messages"
+    url = url_for("add_direct_message")
+    return render_template("tech_messages_direct.html", all_messages=all_messages, heading=heading, url=url) 
+
+
+#displays direct messages and marks as read
+@app.route('/directmessagesread/<int:message_id>', methods=['GET', 'POST'])
+@login_required
+def direct_messages_read(message_id):
+    message = Messages.query.get_or_404(message_id)
+    message.read = True
+    db.session.add(message) #adding the message entry to db
+    db.session.commit()
+    all_messages =  Messages.query.filter(Messages.direct_message == 'True', Messages.incoming_lead == False).order_by(Messages.date_added.desc())
+    heading = "Direct Technician Messages"
+    url = url_for("add_direct_message")
+    return render_template("tech_messages_direct.html", all_messages=all_messages, heading=heading, url=url) 
+
+
+#displays a given technician's messages (WITHOUT message form) and marks a given message as "read"
+@app.route('/messagesreadshort/tech/<int:tech_id>/<int:message_id>', methods=['GET', 'POST'])
+@login_required
+def tech_messages_read_short(tech_id, message_id):
+
+    recipient = Technicians.query.get_or_404(tech_id)
+
+    heading = f"Messages for {recipient.name}"
+
+    message_read = Messages.query.get_or_404(message_id)
+    message_read.read = True
+    db.session.add(message_read) #adding the message entry to db
+    db.session.commit()
+
+    all_messages =  Messages.query.filter(Messages.technician_id == tech_id, Messages.incoming_lead == False).order_by(Messages.date_added.desc())
+    url = url_for("add_message")
+    
+    return render_template("tech_messages.html", all_messages=all_messages, heading=heading, url=url) 
+
+
+#displays a given job's messages (WITHOUT message form) and mark's a given message as "read"
 @app.route('/messagesreadshort/job/<int:job_id>/<int:tech_id>/<int:message_id>', methods=['GET', 'POST'])
 @login_required
 def job_messages_read_short(job_id, tech_id, message_id):
@@ -717,35 +757,7 @@ def job_messages_read_short(job_id, tech_id, message_id):
     return render_template("tech_messages.html", all_messages=all_messages, heading=heading, url=url) 
 
 
-#sends message to incoming lead
-@app.route('/messages/incoming/<string:phone>', methods=['GET', 'POST'])
-@login_required
-def incoming_messages(phone):
-        
-    message = None
-    form = IncomingForm()
-
-    form.phone.data = phone
-
-    if form.validate_on_submit():
-
-        message_to_add = Messages(technician_id=000, phone=form.phone.data, message_body=form.message_body.data, job_ref=000, direct_message=True, incoming_lead=True) 
-
-        db.session.add(message_to_add) #adding the message entry to db
-
-        db.session.commit()  #comitting the addition
-
-        send_message(message_to_add)    
-
-        message = form.message_body.data
-
-        form.phone.data = '' #clearing the form
-        form.message_body.data = ''
-        flash("Message sent successfully.")
-
-    all_messages =  Messages.query.filter(Messages.incoming_lead).order_by(Messages.date_added.desc())
-
-    return render_template("incoming_send.html", form=form, message=message, all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+#Updates-to-Database----------------------------------------------------
 
 
 #UPDATES user table database record
@@ -822,6 +834,9 @@ def update_job(id):
         return render_template("update_job.html", form=form, job_to_update=job_to_update, id=id)
 
 
+#Deletions from Database---------------------------------------------
+
+
 #deletes user from database
 @app.route('/deleteuser/<int:id>')
 @login_required
@@ -843,19 +858,19 @@ def delete_user(id):
 @app.route('/deletetech/<int:id>')
 @login_required
 def delete_tech(id):
+
     tech_to_delete = Technicians.query.get_or_404(id)
-    name = None
-    form = TechnicianForm()
+
     try:
         db.session.delete(tech_to_delete)
         db.session.commit()
         flash("Technician deleted successfully.")
-        our_users = Technicians.query.order_by(Technicians.date_added.desc()) #returns everything in database
-        return render_template("technicians.html", form=form, name=name, our_users=our_users) #form, name, and our_users get passed into template
+        our_techs = Technicians.query.order_by(Technicians.date_added.desc()) #returns everything in database
+        return render_template("technicians.html", our_techs=our_techs) #form, name, and our_users get passed into template
 
     except:
         flash("There was an issue deleting user. Try again.")
-    return render_template("technicians.html", form=form, name=name, our_users=our_users) #form, name, and our_users get passed into template
+    return render_template("technicians.html", our_techs=our_techs) #form, name, and our_users get passed into template
 
 
 #deletes job from database
@@ -897,6 +912,9 @@ def delete_lead(message_id):
         flash("There was an issue deleting lead. Try again.")
 
     return render_template("incoming_list.html", all_messages=all_messages, heading="Incoming Leads") #form, name, and our_users get passed into template
+
+
+#Assign-And-Notification-of-Jobs---------------------------------------
 
 
 #assigns job from database
@@ -1268,34 +1286,34 @@ def confirm_reply():
 
 #--------------------------------------------------------
 
-account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
-client = Client(account_sid, auth_token)
+#account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
+#auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+#client = Client(account_sid, auth_token)
 #message = client.messages('SM9c118b48491cefc5e7c2f55bb0db5e07').fetch()
 
-message = client.messages.list(limit=2)
+#message = client.messages.list(limit=2)
 
-for record in message:
-    last_sms_auto = record.body
-    print(record.body)
-    print(last_sms_auto)
+#for record in message:
+ #   last_sms_auto = record.body
+  #  print(record.body)
+   # print(last_sms_auto)
 
-#--------------------------------------------------------
 
+#home and about pages-----------------------------------------------------
+
+#home page
 @app.route('/')
 def index(): 
     return render_template("index.html")
 
+#about page
 @app.route("/about") #set a route ('/' for homepage)
 def about():
     return render_template("about.html")
 
-@app.route('/user/<name>')
-def user(name):
-    return render_template("user.html", name=name)
 
-#--------------------------------------------------------
-#Database classes defined
+#Database-Classes-Defined-------------------------------------------------
+
 
 #create database model for Users table
 class Users(db.Model, UserMixin):
@@ -1391,7 +1409,9 @@ class Messages(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.username #will put message on screen
 
-#--------------------------------------------------------
+
+#Follow-Text--------------------------------------------------------
+
 
 #Send follow up messages for jobs that are still open by 9PM
 
@@ -1408,6 +1428,8 @@ sched.start()
 
 # Shut down the scheduler when exiting the app
 #atexit.register(lambda: sched.shutdown())
+
+#Run----------------------------------------------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)

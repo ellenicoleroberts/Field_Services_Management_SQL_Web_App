@@ -13,7 +13,7 @@
         <tr>
             <td>
                 {% if message.read == False %}
-                    <a href="{{ url_for('all_tech_messages_read', message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
+                    <a href="{{ url_for('all_messages_read_short', message_id=message.id) }}" style="color:rgb(199, 0, 0)"><b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b></a>
                 {% else %}
                     <b>{{ message.date_added.strftime('%-I:%M%p %x') }}</b>
                 {% endif %}
