@@ -70,7 +70,37 @@ login_manager.login_view = 'login'
 def load_user(user_id): 
     return Users.query.get(int(user_id))
 
-#----------------------------------------------------------------
+
+#create a login page
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(username=form.username.data.lower()).first()  #grabs 1st username (the ONLY one, as they are unique) -- if it exists!
+        if user:
+            if check_password_hash(user.password_hash, form.password.data): #checks the hash, returns True or False 
+                login_user(user)
+                flash("Login successful.")
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Wrong password, please try again.")
+        else:
+            flash("User doesn't exist or incorrect username. Please try again.")
+
+    return render_template('login.html', form=form)
+
+
+#create logout 
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    flash("You are now logged out.")
+    return redirect(url_for('login'))
+
+
+#Search-Bar----------------------------------------------------------------
+
 
 #pass info to Navbar so can run search from navbar
 @app.context_processor
@@ -90,6 +120,8 @@ def search():
         jobs = jobs.order_by(Jobs.date_added).all()
 
         return render_template("search.html", form=form, searched=input, jobs=jobs)
+
+#Users------------------------------------------------------
 
 
 #admin
@@ -130,34 +162,6 @@ def test_pw():
 
     return render_template("testpassword.html", email=email, 
     password=password, form=form, pw_to_check=pw_to_check, passed=passed)
-
-
-#create a login page
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = Users.query.filter_by(username=form.username.data.lower()).first()  #grabs 1st username (the ONLY one, as they are unique) -- if it exists!
-        if user:
-            if check_password_hash(user.password_hash, form.password.data): #checks the hash, returns True or False 
-                login_user(user)
-                flash("Login successful.")
-                return redirect(url_for('dashboard'))
-            else:
-                flash("Wrong password, please try again.")
-        else:
-            flash("User doesn't exist or incorrect username. Please try again.")
-
-    return render_template('login.html', form=form)
-
-
-#create logout 
-@app.route('/logout', methods=['GET', 'POST'])
-@login_required
-def logout():
-    logout_user()
-    flash("You are now logged out.")
-    return redirect(url_for('login'))
 
 
 #create a dashboard page
