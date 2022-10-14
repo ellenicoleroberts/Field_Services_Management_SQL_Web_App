@@ -50,15 +50,14 @@ app.config['SECRET_KEY'] = "Simple Simply Simplifies"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
 #add Postgre database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
 
 #add Postgre database for HEROKU
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
 
 #initialize the database with SQLAlchemy
 
 db = SQLAlchemy(app) 
-
 
 #Flask-Login-------------------------------------------------------- 
 
@@ -1429,8 +1428,6 @@ def confirm_reply():
 
 
             elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'p' and body.replace(" ", "")[1:].isnumeric():
-
-                body = body.replace(" ", "")
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
