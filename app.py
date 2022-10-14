@@ -50,10 +50,10 @@ app.config['SECRET_KEY'] = "Simple Simply Simplifies"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
 #add Postgre database
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
 
 #add Postgre database for HEROKU
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkdhnuurafxtro:b7fd10ba34020e2ea6ec10e38d6f048eedb453ad0d61b1be6dcdd3dfbda0265a@ec2-3-211-221-185.compute-1.amazonaws.com:5432/d747ck1do49tgb'
 
 #initialize the database with SQLAlchemy
 
@@ -1046,6 +1046,7 @@ def uncancel_job(id):
         job_to_uncancel.canceled = False
         job_to_uncancel.confirmed = "Unconfirmed"
         job_to_uncancel.open = "Open"
+        job_to_uncancel.technician == None
         db.session.add(job_to_uncancel) 
         db.session.commit()
         flash("Job re-established. Please reassign to a technician.")
@@ -1155,7 +1156,7 @@ def close_job(technician):
         message = client.messages.create(
             to=technician.phone,
             from_="+13605854201",
-            body=f"Thank you, {technician.name}.\n\nWhat is the total amount paid by the customer for Job #{technician.last_sms_job_ref}?\n\nEnter 'P' followed by amount, e.g. if job cost $250, enter 'P250'.\n\nIf amount was billed, enter 'B250'."
+            body=f"Thank you, {technician.name}.\n\nWhat is the total amount charged for Job #{technician.last_sms_job_ref}?\n\nEnter 'P' followed by amount, e.g. if job cost $250, enter 'P250'.\n\nIf amount was billed, enter 'B250'."
             )
 
         technician.last_sms_auto = message.body
@@ -1408,8 +1409,6 @@ def confirm_reply():
 
                     technician.last_sms_auto = body
 
-                    print(f"Job ID is {job.id}.")
-
                     technician.last_sms_job_ref = job.id
 
                     message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=body, job_ref=job.id) 
@@ -1429,7 +1428,9 @@ def confirm_reply():
                     resp.message(f"Please enter correct Job #.")
 
 
-            elif "What is the total amount paid" in technician.last_sms_auto and body[0] == 'p' and body[1:].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'p' and body.replace(" ", "")[1:].isnumeric():
+
+                body = body.replace(" ", "")
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1454,7 +1455,7 @@ def confirm_reply():
                 else:
                     resp.message("Please enter correct Job #.")
 
-            elif "What is the total amount paid" in technician.last_sms_auto and body[0] == 'b' and body[1:].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'b' and body.replace(" ", "")[1:].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1470,7 +1471,7 @@ def confirm_reply():
 
                     job.billed = True
 
-                    job.amt_paid = body[1:]
+                    job.amt_billed = body[1:]
 
                     db.session.commit()
 

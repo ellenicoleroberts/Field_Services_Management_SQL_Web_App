@@ -4,18 +4,16 @@
 
 {% for message in get_flashed_messages() %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ message }} {{ address }}
+        {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endfor %}
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">jobs</a>
     <a href="{{ url_for('add_job') }}" class="btn btn-outline-dark btn-lg">add job</a>
-  </div>  
+  </div>   
 </br>
-{% if address %}
-    <h1>Update Job #{{ id }}</h1>
+<h1>{{ heading }}</h1>
     <br/>
     <table class="table table-hover table-bordered table-striped">
         {% for job in all_jobs %}
@@ -31,11 +29,6 @@
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:darkmagenta">{{ job.open }}</a>
                 {% else %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
-                    {% if job.billed == False %}
-                         <em style="color:green">${{ job.amt_paid }} paid</em>
-                    {% else %}
-                         <em style="color:green">${{ job.amt_billed }} billed</em>
-                    {% endif %}                      
                 {% endif %}
                 | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
                 | {{ job.job_time }} {{ job.address }} {{ job.notes }} <a href="{{ url_for('delete_job', id=job.id) }}" style="color:red">Delete</a> | 
@@ -58,12 +51,12 @@
                 {% endif %} 
                 {% if job.open == "Open" %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
-                    {% else %}
+                {% else %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
                     {% if job.billed == False %}
-                         <em style="color:gray">${{ job.amt_paid }} paid</em>
+                        | ${{ job.amt_paid }} paid
                     {% else %}
-                         <em style="color:gray">${{ job.amt_billed }} billed</em>
+                        | ${{ job.amt_billed }} billed
                     {% endif %}                      
                 {% endif %}
                 | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
@@ -80,79 +73,5 @@
         {% endfor %}  
     </table>
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">Jobs</a>
-      </div>  
-    </br>
-
-{% else %}
-    <h1>Update Job #{{ id }}</h1>
-    <br/>
-<div class="shadow p-3 mb-5 bg-body rounded">
-    <form action="/updatejob/{{ 
-        job_to_update.id }}" method="POST">
-        {{ form.hidden_tag() }}
-        
-        {{ form.description.label(class="form-label") }} <!-- just the label --> 
-
-        {{ form.description(class="form-control",
-        value=job_to_update.description) }}
-
-        <br/>
-        {{ form.confirmed.label(class="form-label") }} <!-- just the label --> 
-
-        {{ form.confirmed(class="form-control",
-        value=job_to_update.confirmed) }}
-        <br/>
-        {{ form.open.label(class="form-label") }} <!-- just the label --> 
-
-        {{ form.open(class="form-control",
-        value=job_to_update.open) }}
-        <br/>
-        {{ form.contact.label(class="form-label") }} <!-- just the label --> 
-
-        {{ form.contact(class="form-control",
-        value=job_to_update.contact) }}
-        <br/>
-
-        {{ form.address.label(class="form-label") }}
-
-        {{ form.address(class="form-control", 
-        value=job_to_update.address) }}
-        <br/>
-        {{ form.technician.label(class="form-label") }} <!-- just the label --> 
- 
-        {% if job_to_update.technician != None %}
-             {{ job_to_update.technician_name }} 
-            <!--{{ form.technician(class="form-control", value=job_to_update.technician) }}-->
-        {% else %}
-            Not yet assigned
-        {% endif %}
-        <br/> 
-        <br/>
-        {{ form.job_time.label(class="form-label") }} <!-- just the label --> 
-
-        {{ form.job_time(class="form-control",
-        value=job_to_update.job_time) }}
-        <br/>
-        {{ form.notes.label(class="form-label") }} <!-- just the label --> 
-
-        {{ form.notes(class="form-control",
-        value=job_to_update.notes) }}
-        <br/>
-        {{ form.submit(class="btn btn-success") }}
-
-        <a href="{{ url_for('delete_job', id=id)}}" 
-        class="btn btn-danger">delete</a>
-
-    </form>
-</div>
-
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{{ url_for('jobs') }}" class="btn btn-outline-dark btn-lg">cancel</a>
-  </div>  
-<br/><br/><br/>
-
-{% endif %}
 
 {% endblock %}

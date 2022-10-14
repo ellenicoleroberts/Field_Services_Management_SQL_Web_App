@@ -31,6 +31,11 @@
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:darkmagenta">{{ job.open }}</a>
                 {% else %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
+                    {% if job.billed == False %}
+                         <em style="color:green">${{ job.amt_paid }} paid</em>
+                    {% else %}
+                         <em style="color:green">${{ job.amt_billed }} billed</em>
+                    {% endif %}                      
                 {% endif %}
                 | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
                 | {{ job.job_time }} {{ job.address }} {{ job.notes }} <a href="{{ url_for('delete_job', id=job.id) }}" style="color:red">Delete</a> | 
@@ -53,8 +58,13 @@
                 {% endif %} 
                 {% if job.open == "Open" %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
-                {% else %}
+                    {% else %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
+                    {% if job.billed == False %}
+                         <em style="color:gray">${{ job.amt_paid }} paid</em>
+                    {% else %}
+                         <em style="color:gray">${{ job.amt_billed }} billed</em>
+                    {% endif %}                      
                 {% endif %}
                 | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
                 | {{ job.job_time }} {{ job.address }} {{ job.notes }}<a href="{{ url_for('delete_job', id=job.id) }}" style="color:grey">Delete</a> | 
@@ -136,6 +146,11 @@
                 | <a href="{{ url_for('update_job', id=job.id) }}" style="color:darkmagenta">{{ job.open }}</a>
             {% else %}
                 | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
+                {% if job.billed == False %}
+                     <em style="color:green">${{ job.amt_paid }} paid</em>
+                {% else %}
+                     <em style="color:green">${{ job.amt_billed }} billed</em>
+                {% endif %}                      
             {% endif %}
             | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
             | {{ job.job_time }} {{ job.address }} {{ job.notes }} <a href="{{ url_for('delete_job', id=job.id) }}" style="color:red">Delete</a> | 
@@ -158,8 +173,13 @@
             {% endif %} 
             {% if job.open == "Open" %}
                 | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
-            {% else %}
+                {% else %}
                 | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
+                {% if job.billed == False %}
+                     <em style="color:gray">${{ job.amt_paid }} paid</em>
+                {% else %}
+                     <em style="color:gray">${{ job.amt_billed }} billed</em>
+                {% endif %}                      
             {% endif %}
             | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
             | {{ job.job_time }} {{ job.address }} {{ job.notes }}<a href="{{ url_for('delete_job', id=job.id) }}" style="color:grey">Delete</a> | 
