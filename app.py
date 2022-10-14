@@ -1111,7 +1111,7 @@ def job_notify(tech_id, job_id):
 def send_message(outgoing_message): 
 
         account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
 
         client = Client(account_sid, auth_token)
 
@@ -1126,7 +1126,7 @@ def send_message(outgoing_message):
 def confirm_job(technician, job): 
 
         account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
 
         client = Client(account_sid, auth_token)
 
@@ -1148,7 +1148,7 @@ def confirm_job(technician, job):
 def close_job(technician): 
 
         account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
 
         client = Client(account_sid, auth_token)
 
@@ -1169,7 +1169,7 @@ def close_job(technician):
 def closing_message(technician): 
 
         account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
 
         client = Client(account_sid, auth_token)
 
@@ -1191,7 +1191,7 @@ def closing_message(technician):
 def closing_message_billed(technician): 
 
         account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
 
         client = Client(account_sid, auth_token)
 
@@ -1212,7 +1212,7 @@ def closing_message_billed(technician):
 def cancel_message(technician, job): 
 
         account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
 
         client = Client(account_sid, auth_token)
 
@@ -1234,7 +1234,7 @@ def cancel_message(technician, job):
 def follow_up(job):
 
         account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
 
         client = Client(account_sid, auth_token)
 
