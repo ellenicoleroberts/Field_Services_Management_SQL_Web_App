@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-light pt-4 pb-4 fs-2">
+<nav class="navbar navbar-expand-lg bg-light pt-4 pb-4 fs-4">
     <div class="container-fluid">
         <a class="navbar-brand fs-1" href="{{ url_for('index') }}"><b>Simple.</b></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,9 +64,9 @@
           </div>
             <form method="POST" action="{{ url_for('search')}}" class="d-flex" role="search">
               {{ form.hidden_tag() }}
-              <input class="form-control me-2 fs-2" type="search" placeholder="Search" aria-label="Search",
+              <input class="form-control me-2 fs-4" type="search" placeholder="Search" aria-label="Search",
               name="searched">
-              <button class="btn btn-outline-dark fs-2" type="submit">search</button>
+              <button class="btn btn-outline-dark fs-4" type="submit">search</button>
             </form>
         </ul>
       </div>
