@@ -50,10 +50,10 @@ app.config['SECRET_KEY'] = "Simple Simply Simplifies"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
 #add Postgre database
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
 
 #add Postgre database for HEROKU
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gvdtjfyatqwptd:e50bf81d4db7717b7e8aa229483778080efb6b15c14023d5519e0319da861480@ec2-54-160-200-167.compute-1.amazonaws.com:5432/ddilq9tk5a1ci6'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gvdtjfyatqwptd:e50bf81d4db7717b7e8aa229483778080efb6b15c14023d5519e0319da861480@ec2-54-160-200-167.compute-1.amazonaws.com:5432/ddilq9tk5a1ci6'
 
 #initialize the database with SQLAlchemy
 
@@ -1155,7 +1155,28 @@ def close_job(technician):
         message = client.messages.create(
             to=technician.phone,
             from_="+13605854201",
-            body=f"Thank you, {technician.name}.\n\nWhat is the total amount charged for Job #{technician.last_sms_job_ref}?\n\nEnter 'P' followed by amount, e.g. if job cost $250, enter 'P250'.\n\nIf amount was billed, enter 'B250'."
+            body=f"Thank you, {technician.name}.\n\nWhat is the total amount charged to the customer for Job #{technician.last_sms_job_ref}?\n\nEnter 'C' followed by amount, e.g. if job cost $250, enter 'C250'.\n\nIf amount was billed, enter 'B250'."
+            )
+
+        technician.last_sms_auto = message.body
+
+        message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=technician.last_sms_auto, job_ref=technician.last_sms_job_ref) 
+        
+        db.session.add(message_to_add) #adding the message entry to db
+        db.session.commit()  #comitting the addition
+
+
+def close_expenses(technician): 
+
+        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
+        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+            to=technician.phone,
+            from_="+13605854201",
+            body=f"Thank you, {technician.name}.\n\nWhat is the total amount for parts/expenses for Job #{technician.last_sms_job_ref}?\n\nEnter 'P' followed by amount, e.g. if parts cost $45.50, enter 'P45.50'.\n\n"
             )
 
         technician.last_sms_auto = message.body
@@ -1187,27 +1208,6 @@ def closing_message(technician):
 
         db.session.commit() 
 
-
-def closing_message_billed(technician): 
-
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
-
-        client = Client(account_sid, auth_token)
-
-        message = client.messages.create(
-            to=technician.phone,
-            from_="+13605854201",
-            body=f"{technician.name} thank you. Job #{technician.last_sms_job_ref} is now CLOSED."
-            )
-
-        technician.last_sms_auto = message.body
-
-        message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=technician.last_sms_auto, job_ref=technician.last_sms_job_ref) 
-        
-        db.session.add(message_to_add) #adding the message entry to db
-
-        db.session.commit()
 
 def cancel_message(technician, job): 
 
@@ -1427,7 +1427,7 @@ def confirm_reply():
                     resp.message(f"Please enter correct Job #.")
 
 
-            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'p' and body.replace(" ", "")[1:].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'c' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1439,20 +1439,18 @@ def confirm_reply():
                     
                     db.session.add(message_to_add) #adding the message entry to db
 
-                    job.open = "Closed"
-
                     job.amt_paid = body[1:]
 
                     db.session.commit()
 
-                    closing_message(technician)
+                    close_expenses(technician)
 
                     exit()
                 
                 else:
                     resp.message("Please enter correct Job #.")
 
-            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'b' and body.replace(" ", "")[1:].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'b' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1463,8 +1461,6 @@ def confirm_reply():
                     message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=body, job_ref=technician.last_sms_job_ref) 
                     
                     db.session.add(message_to_add) #adding the message entry to db
-
-                    job.open = "Closed"
 
                     job.billed = True
 
@@ -1472,7 +1468,34 @@ def confirm_reply():
 
                     db.session.commit()
 
-                    closing_message_billed(technician)
+                    close_expenses(technician)
+
+                    exit()
+                
+                else:
+                    resp.message("Please enter correct Job #.")
+
+            elif "What is the total amount for parts/expenses" in technician.last_sms_auto and body[0] == 'p' and body.replace(" ", "")[1].isnumeric():
+
+                job = Jobs.query.get_or_404(tech.last_sms_job_ref)
+
+                if job.technician_phone == technician.phone:
+
+                    print("you've made it this far")
+
+                    technician.last_sms_auto = body
+
+                    message_to_add = Messages(technician_id=technician.id, tech_name=technician.name, phone=technician.phone, message_body=body, job_ref=technician.last_sms_job_ref) 
+                    
+                    db.session.add(message_to_add) #adding the message entry to db
+
+                    job.open = "Closed"
+
+                    job.expenses = body[1:]
+
+                    db.session.commit()
+
+                    closing_message(technician)
 
                     exit()
                 
