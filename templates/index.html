@@ -3,7 +3,7 @@
 {% block content %}
 
 <img src="{{ url_for('static', filename='images/simplehomepage.png')}}"
-width="1250">
+width="1250" class="img-responsive">
 <br/><br/><br/><br/>
 <h3>Simple streamlines the internal processes of field service companies. Through its straightforward 
   interface and easy approach to workflow management, Simple drastically reduces the time it takes job 
@@ -11,5 +11,9 @@ width="1250">
   organized, up-to-date accounting.
 <br/><br/>
   Think easy, think Simple.</h3>
+
+<!--<p id="demo">This is stuff</p>
+
+<script src="{{ url_for('static', filename='js/myfile.js') }}"></script> -->
 
 {% endblock %}
