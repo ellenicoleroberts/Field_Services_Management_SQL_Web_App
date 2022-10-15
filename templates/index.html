@@ -2,20 +2,14 @@
 
 {% block content %}
 
-<h1>Simple.</h1>
-
-<div class="container text-center">
-    <div class="row">
-      <div class="col">
-        Test 1
-      </div>
-      <div class="col">
-        Test 2
-      </div>
-      <div class="col">
-        Test 3
-      </div>
-    </div>
-  </div>
+<img src="{{ url_for('static', filename='images/simplehomepage.png')}}"
+width="1250">
+<br/><br/><br/><br/>
+<h3>Simple streamlines the internal processes of field service companies. Through its straightforward 
+  interface and easy approach to workflow management, Simple drastically reduces the time it takes job 
+  dispatchers to assign and manage workload through a traditional text messaging system while maintaining 
+  organized, up-to-date accounting.
+<br/><br/>
+  Think easy, think Simple.</h3>
 
 {% endblock %}
