@@ -16,7 +16,7 @@
     <table class="table table-hover table-bordered table-striped">
         {% for our_user in our_users %}
             <tr>
-            <td>Date Account Created: {{ our_user.date_added }} | ID #{{ our_user.id}}. <a href="{{ url_for('update_user', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.username }} 
+            <td><b>Account Created:</b> {{ our_user.date_added }} | ID #{{ our_user.id}}. <a href="{{ url_for('update_user', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.username }} 
                 | {{ our_user.password_hash }} </td>
             </tr>
         {% endfor %}   
