@@ -33,9 +33,7 @@ We look forward to working with you.</h4>
 
     <h1>Welcome!</h1>
     <br/><br/>
-    <div class="d-grid gap-2">
-        <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-lg" type="button">Login to get started</a>
-      </div> 
+
     </br>
 <!----    <table class="table table-hover table-bordered table-striped">
         {% for our_user in our_users %}
@@ -47,12 +45,8 @@ We look forward to working with you.</h4>
     </table> -->
 
 {% else %}
+ 
 
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <a href="{{ url_for('login') }}" class="btn btn-outline-dark btn-lg">Login</a>
-  </div>   
-
-    <br/>
 <div class="shadow p-3 mb-5 bg-body rounded">
     <form method="POST">
         <h1>Register</h1>
@@ -98,7 +92,7 @@ We look forward to working with you.</h4>
     {% endfor %}  
 </table> -->
 {% endif %}
-<br/><br/>
+
 <img src="{{ url_for('static', filename='images/simpleregister2.jpg' )}}"
 class="img-fluid" alt="Responsive image">
 
