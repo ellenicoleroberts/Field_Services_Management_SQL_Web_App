@@ -10,15 +10,13 @@
 {% endfor %}
 
 
-    <h1>Admin Area</h1>
+    <h1>Admin Area: Simple Users</h1>
     <br/><br/>
-    <div class="d-grid gap-2">
-        <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-lg" type="button">Login to get started</a>
-      </div> 
-----    <table class="table table-hover table-bordered table-striped">
+
+    <table class="table table-hover table-bordered table-striped">
         {% for our_user in our_users %}
             <tr>
-            <td>ID #{{ our_user.id}}. <a href="{{ url_for('update_user', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.username }} 
+            <td>Date Account Created: {{ our_user.date_added }} | ID #{{ our_user.id}}. <a href="{{ url_for('update_user', id=our_user.id) }}">{{ our_user.name }}</a> | {{ our_user.username }} 
                 | {{ our_user.password_hash }} </td>
             </tr>
         {% endfor %}   

@@ -47,7 +47,6 @@
                   <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
                   {% if current_user.username == "ellenicole" %}
                     <li><a class="dropdown-item" href="{{ url_for('admin') }}">Admin</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('admin') }}">Admin</a></li>
                   {% endif %}
               {% else %}
                 Sign up
