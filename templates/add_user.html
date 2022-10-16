@@ -2,6 +2,11 @@
 
 {% block content %}
 
+<br/><br/>
+<img src="{{ url_for('static', filename='images/simpleregister.png' )}}"
+class="img-fluid" alt="Responsive image">
+<br/><br/><br/>
+
 {% for message in get_flashed_messages() %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ message }}
@@ -32,9 +37,7 @@
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
     <a href="{{ url_for('login') }}" class="btn btn-outline-dark btn-lg">Login</a>
   </div>   
-  <br/>
 
-    <h1>Sign up with Simple</h1>
     <br/>
 <div class="shadow p-3 mb-5 bg-body rounded">
     <form method="POST">
@@ -80,7 +83,6 @@
 </table> -->
 {% endif %}
 <br/><br/>
-<img src="{{ url_for('static', filename='images/simpleregister.png' )}}"
-class="img-fluid" alt="Responsive image">
+
 
 {% endblock %}
