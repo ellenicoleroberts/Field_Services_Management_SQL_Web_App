@@ -127,9 +127,10 @@ def search():
 @app.route('/admin')
 @login_required
 def admin(): 
-    id = current_user.id
-    if id == 9:
-        return render_template("admin.html")
+    username = current_user.username
+    if username == "ellenicole":
+        our_users = Users.query.order_by(Users.date_added.desc()) #returns everything in database
+        return render_template("users_admin.html", our_users=our_users)
     else:
         flash("Sorry you must be the Admin to access this page.")
         return redirect(url_for("dashboard"))
