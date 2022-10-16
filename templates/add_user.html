@@ -19,19 +19,17 @@ letsgo@simpletheapp.com.</h4>
 We look forward to working with you.</h4>
 <br/><br/>
 
-
+{% if username %}
 {% for message in get_flashed_messages() %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endfor %}
-
-
-
-{% if username %}
-
     <h1>Welcome!</h1>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="{{ url_for('login') }}" class="btn btn-outline-dark btn-lg">let's go</a>
+      </div> 
     <br/><br/>
 
     </br>
