@@ -41,8 +41,12 @@ class="img-fluid" alt="Responsive image">
 <br/><br/>
 
 <div class="d-grid gap-2">
-  <a href="{{ url_for('add_user') }}" class="btn btn-succes" style="color:rgb(0, 145, 17)" fs-1><b>sign me up</b></a>
+  <button  style="color:rgb(0, 145, 17)"><a href="{{ url_for('add_user') }}" class="btn btn-succes"><b>sign me up</b></a></button>
 </div>
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+  <a href="{{ url_for('add_user') }}" class="btn btn-outline-dark btn-lg">register</a>
+</div>  
 <!--<p id="demo">This is stuff</p>
 
 <script src="{{ url_for('static', filename='js/myfile.js') }}"></script> -->
