@@ -103,7 +103,6 @@ def logout():
 
 #pass info to Navbar so can run search from navbar
 @app.context_processor
-@login_required
 def base():
     form = SearchForm()
     return dict(form=form)
@@ -111,7 +110,6 @@ def base():
 
 #create search function
 @app.route('/search', methods=['POST'])
-
 def search():
     form = SearchForm()
     jobs = Jobs.query
