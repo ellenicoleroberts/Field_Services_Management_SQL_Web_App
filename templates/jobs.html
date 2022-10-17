@@ -30,9 +30,9 @@
                 {% else %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
                     {% if job.billed == False %}
-                         <em style="color:green">${{ job.amt_paid }} paid, </em><em style="color:green">${{ <job class="expenses"></job> }} parts</em>
+                         <em style="color:green">${{ job.amt_paid }} paid</em>
                     {% else %}
-                         <em style="color:green">${{ job.amt_billed }} billed, </em><em style="color:green">${{ <job class="expenses"></job> }} parts</em>
+                         <em style="color:green">${{ job.amt_billed }} billed</em>
                     {% endif %}                      
                 {% endif %}
                 | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
@@ -59,9 +59,9 @@
                     {% else %}
                     | <a href="{{ url_for('update_job', id=job.id) }}" style="color:gray">{{ job.open }}</a>
                     {% if job.billed == False %}
-                         <em style="color:gray">${{ job.amt_paid }} paid, </em><em style="color:green">${{ <job class="expenses"></job> }} parts</em>
+                         <em style="color:gray">${{ job.amt_paid }} paid</em>
                     {% else %}
-                         <em style="color:gray">${{ job.amt_billed }} billed, </em><em style="color:green">${{ <job class="expenses"></job> }} parts</em>
+                         <em style="color:gray">${{ job.amt_billed }} billed</em>
                     {% endif %}                      
                 {% endif %}
                 | Contact: {{ job.contact }} | Technician: {{ job.technician_name }}, ID #{{ job.technician }} | Technician Phone: {{ job.technician_phone }} 
