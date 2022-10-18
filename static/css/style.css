@@ -1,7 +1,4 @@
-<!-- h1 {
-    color: black;
-    font-size:45px
-}
+
 
 body {
     background-color: white
@@ -11,3 +8,7 @@ body {
     font-size: 22px;
     color: green;
 } */
+
+.error {
+    color: green
+}
