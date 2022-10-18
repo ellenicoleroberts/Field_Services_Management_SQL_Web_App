@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<br/><br/>
+<img src="{{ url_for('static', filename='images/simpleregister.png' )}}"
+class="img-fluid" alt="Responsive image">
+<br/><br/><br/>
 {% for message in get_flashed_messages() %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ message }}
@@ -35,5 +38,7 @@
 
     </form>
 </div>
+<img src="{{ url_for('static', filename='images/simpleregister2.jpg' )}}"
+class="img-fluid" alt="Responsive image">
 
 {% endblock %}
