@@ -59,7 +59,6 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gvdtjfyatqwptd:e50bf81d4db7717b7e8aa229483778080efb6b15c14023d5519e0319da861480@ec2-54-160-200-167.compute-1.amazonaws.com:5432/ddilq9tk5a1ci6'
 
 #initialize the database with SQLAlchemy
-
 db = SQLAlchemy(app) 
 
 #Flask-Login-------------------------------------------------------- 
@@ -1267,7 +1266,7 @@ def confirm_reply():
 
     resp = MessagingResponse()
 
-    body = request.values.get('Body').lower()
+    body = request.values.get('Body').lower().lstrip()
 
     if bool(Technicians.query.filter_by(phone=request.values.get('From')).first()):
 
@@ -1434,7 +1433,7 @@ def confirm_reply():
                     resp.message(f"Please enter correct Job #.")
 
 
-            elif "What is the total amount charged" in technician.last_sms_auto and body[0].lstrip() == 'c' and body.replace(" ", "")[1].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'c' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1457,7 +1456,7 @@ def confirm_reply():
                 else:
                     resp.message("Please enter correct Job #.")
 
-            elif "What is the total amount charged" in technician.last_sms_auto and body[0].lstrip() == 'b' and body.replace(" ", "")[1].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'b' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1482,7 +1481,7 @@ def confirm_reply():
                 else:
                     resp.message("Please enter correct Job #.")
 
-            elif "What is the total amount for parts/expenses" in technician.last_sms_auto and body[0].lstrip() == 'p' and body.replace(" ", "")[1].isnumeric():
+            elif "What is the total amount for parts/expenses" in technician.last_sms_auto and body[0] == 'p' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
