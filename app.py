@@ -54,7 +54,7 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gvdtjfyatqwptd:e50bf81d4db7717b7e8aa229483778080efb6b15c14023d5519e0319da861480@ec2-54-160-200-167.compute-1.amazonaws.com:5432/ddilq9tk5a1ci6'
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 
 #initialize the database with SQLAlchemy
 db = SQLAlchemy(app) 
