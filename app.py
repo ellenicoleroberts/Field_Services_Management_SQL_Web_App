@@ -45,7 +45,7 @@ from webforms import UserForm, TechnicianForm, JobForm, MessageForm, IncomingFor
 
 app = Flask(__name__) #instance of Flask, creates an app
 
-app.config['SECRET_KEY'] = "Simple Simply Simplifies"
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY'] 
 
 #Add-Database------------------------------------------------------
 
@@ -1117,8 +1117,8 @@ def job_notify(tech_id, job_id):
 
 def send_message(outgoing_message): 
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
-        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
+        account_sid = os.environ['TWILIO_ACCOUNT_SID']  
+        auth_token = os.environ['TWILIO_AUTH_TOKEN']   
 
         client = Client(account_sid, auth_token)
 
@@ -1132,8 +1132,8 @@ def send_message(outgoing_message):
 
 def confirm_job(technician, job): 
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
-        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
+        account_sid = os.environ['TWILIO_ACCOUNT_SID']  
+        auth_token = os.environ['TWILIO_AUTH_TOKEN']   
 
         client = Client(account_sid, auth_token)
 
@@ -1154,8 +1154,8 @@ def confirm_job(technician, job):
 
 def close_job(technician): 
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
-        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
+        account_sid = os.environ['TWILIO_ACCOUNT_SID']  
+        auth_token = os.environ['TWILIO_AUTH_TOKEN']   
 
         client = Client(account_sid, auth_token)
 
@@ -1175,8 +1175,8 @@ def close_job(technician):
 
 def close_expenses(technician): 
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
-        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] 
 
         client = Client(account_sid, auth_token)
 
@@ -1196,8 +1196,8 @@ def close_expenses(technician):
 
 def closing_message(technician): 
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
-        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] 
 
         client = Client(account_sid, auth_token)
 
@@ -1218,8 +1218,8 @@ def closing_message(technician):
 
 def cancel_message(technician, job): 
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
-        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] 
 
         client = Client(account_sid, auth_token)
 
@@ -1240,8 +1240,8 @@ def cancel_message(technician, job):
 
 def follow_up(job):
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
-        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] 
 
         client = Client(account_sid, auth_token)
 
@@ -1548,16 +1548,6 @@ def confirm_reply():
     return Response(str(resp)) 
 
 #--------------------------------------------------------
-
-#client = Client(account_sid, auth_token)
-#message = client.messages('SM9c118b48491cefc5e7c2f55bb0db5e07').fetch()
-
-#message = client.messages.list(limit=2)
-
-#for record in message:
- #   last_sms_auto = record.body
-  #  print(record.body)
-   # print(last_sms_auto)
 
 
 #home and about pages-----------------------------------------------------
