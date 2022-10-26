@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+import os
+
 from distutils.command import check
 from distutils.command.install_egg_info import to_filename
 from unicodedata import name
@@ -1114,8 +1117,8 @@ def job_notify(tech_id, job_id):
 
 def send_message(outgoing_message): 
 
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
 
         client = Client(account_sid, auth_token)
 
@@ -1129,8 +1132,8 @@ def send_message(outgoing_message):
 
 def confirm_job(technician, job): 
 
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
 
         client = Client(account_sid, auth_token)
 
@@ -1151,8 +1154,8 @@ def confirm_job(technician, job):
 
 def close_job(technician): 
 
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
 
         client = Client(account_sid, auth_token)
 
@@ -1172,8 +1175,8 @@ def close_job(technician):
 
 def close_expenses(technician): 
 
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
 
         client = Client(account_sid, auth_token)
 
@@ -1193,8 +1196,8 @@ def close_expenses(technician):
 
 def closing_message(technician): 
 
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
 
         client = Client(account_sid, auth_token)
 
@@ -1215,8 +1218,8 @@ def closing_message(technician):
 
 def cancel_message(technician, job): 
 
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
 
         client = Client(account_sid, auth_token)
 
@@ -1237,8 +1240,8 @@ def cancel_message(technician, job):
 
 def follow_up(job):
 
-        account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = "e6e9e912578d5163fbef5836c8807d36"  #os.environ['TWILIO_AUTH_TOKEN']
+        account_sid = os.environ['TWILIO_ACCOUNT_SID'] #"AC96e94d05f34599669bf2c8b82558c331" 
+        auth_token = os.environ['TWILIO_AUTH_TOKEN'] #"e6e9e912578d5163fbef5836c8807d36"  
 
         client = Client(account_sid, auth_token)
 
@@ -1546,8 +1549,6 @@ def confirm_reply():
 
 #--------------------------------------------------------
 
-#account_sid = "AC96e94d05f34599669bf2c8b82558c331"  #os.environ['TWILIO_ACCOUNT_SID']
-#auth_token = "4887b09be58788f39efdf7bf3346183f"  #os.environ['TWILIO_AUTH_TOKEN']
 #client = Client(account_sid, auth_token)
 #message = client.messages('SM9c118b48491cefc5e7c2f55bb0db5e07').fetch()
 
