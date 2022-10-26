@@ -49,19 +49,15 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
 #Add-Database------------------------------------------------------
 
-#add SQLite database
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
-#add Postgre database
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nicoleroberts:Simple0922!@localhost/simpledb' #root is MySQL username from download and password likewise. 'users' is my name of db.
-
-#add Postgre database for HEROKU
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gvdtjfyatqwptd:e50bf81d4db7717b7e8aa229483778080efb6b15c14023d5519e0319da861480@ec2-54-160-200-167.compute-1.amazonaws.com:5432/ddilq9tk5a1ci6'
+#add Postgre database (see .env file for options)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 
 #initialize the database with SQLAlchemy
 db = SQLAlchemy(app) 
 
 #Flask-Login-------------------------------------------------------- 
+
 
 login_manager = LoginManager()  #instantiates Flask login
 login_manager.init_app(app)
