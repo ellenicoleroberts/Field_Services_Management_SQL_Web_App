@@ -1434,7 +1434,7 @@ def confirm_reply():
                     resp.message(f"Please enter correct Job #.")
 
 
-            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'c' and body.replace(" ", "")[1].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0].lstrip() == 'c' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1457,7 +1457,7 @@ def confirm_reply():
                 else:
                     resp.message("Please enter correct Job #.")
 
-            elif "What is the total amount charged" in technician.last_sms_auto and body[0] == 'b' and body.replace(" ", "")[1].isnumeric():
+            elif "What is the total amount charged" in technician.last_sms_auto and body[0].lstrip() == 'b' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
@@ -1482,7 +1482,7 @@ def confirm_reply():
                 else:
                     resp.message("Please enter correct Job #.")
 
-            elif "What is the total amount for parts/expenses" in technician.last_sms_auto and body[0] == 'p' and body.replace(" ", "")[1].isnumeric():
+            elif "What is the total amount for parts/expenses" in technician.last_sms_auto and body[0].lstrip() == 'p' and body.replace(" ", "")[1].isnumeric():
 
                 job = Jobs.query.get_or_404(tech.last_sms_job_ref)
 
