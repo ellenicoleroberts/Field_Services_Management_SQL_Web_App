@@ -188,7 +188,7 @@ def add_user():
             if user is None:
                 hashed_pw = generate_password_hash(form.password_hash.data, "sha256")  #hash the password
                 user = Users(name=form.name.data, email=form.email.data.lower(), username=form.username.data.lower(), password_hash=hashed_pw) #DB Slot! defining new user to add to db
-                if user.name == "nicole" or user.name == "kfir" or user.name == "aarchit":
+                if user.name == "ellenicole" or user.name == "kfir" or user.name == "aarchit":
                     db.session.add(user) #adding the user
                     db.session.commit()  #comitting the addition
                     flash("User added successfully.")
