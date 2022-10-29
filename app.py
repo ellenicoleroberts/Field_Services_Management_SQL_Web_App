@@ -179,6 +179,7 @@ def dashboard():
 @app.route('/user/add', methods=['GET', 'POST'])
 def add_user():
     username = None
+    blocked = False
     form = UserForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data.lower()).first() #DB Slot! if there is a 'first', this means that this user is already in db
@@ -193,7 +194,7 @@ def add_user():
                     flash("User added successfully.")
                 else:
                     flash("We apologize, but at this time we are only allowing pre-established beta users to sign up. Please contact us if you are interested in our beta product.")
-                    return redirect(url_for("add_user"))
+                    blocked = True
             else:
                 flash("Darn, username already exists. Please choose a unique username.")
                 return redirect(url_for("add_user"))
@@ -207,7 +208,7 @@ def add_user():
         form.password_hash.data = ''
         
     our_users = Users.query.order_by(Users.date_added.desc()) #returns everything in database
-    return render_template("add_user.html", form=form, username=username, our_users=our_users) #form, username, and our_users get passed into template
+    return render_template("add_user.html", form=form, username=username, our_users=our_users, blocked=blocked) #form, username, and our_users get passed into template
 
 
 #ADDS technician to database
