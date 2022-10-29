@@ -193,6 +193,7 @@ def add_user():
                     flash("User added successfully.")
                 else:
                     flash("We apologize, but at this time we are only allowing pre-established beta users to sign up. Please contact us if you are interested in our beta product.")
+                    return redirect(url_for("add_user"))
             else:
                 flash("Darn, username already exists. Please choose a unique username.")
                 return redirect(url_for("add_user"))
